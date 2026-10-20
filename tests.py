@@ -25,6 +25,43 @@ def tablero_8x8_vacio():
               #01234567
             ])
 
+def tablero_7x8_incompleto():
+    return leer_tablero([
+              '-------', #7
+              '-------', #6
+              '-------', #5
+              '-------', #4
+              '-------', #3
+              '-------', #2
+              '-------', #1
+              '-------', #0
+              #0123456
+            ])
+
+def tablero_8x7_incompleto():
+    return leer_tablero([
+              '--------', #6
+              '--------', #5
+              '--------', #4
+              '--------', #3
+              '--------', #2
+              '--------', #1
+              '--------', #0
+              #01234567
+            ])
+
+def tablero_7x7_incompleto():
+    return leer_tablero([
+              '-------', #6
+              '-------', #5
+              '-------', #4
+              '-------', #3
+              '-------', #2
+              '-------', #1
+              '-------', #0
+              #0123456
+            ])
+
 def tablero_8x8_inicial_ejemplo():
     return leer_tablero([
               'hcdmedch', #7
@@ -46,20 +83,135 @@ class test_tablero_bien_formado(unittest.TestCase):
         t = tablero_8x8_inicial_ejemplo()
         self.assertTrue(tablero_bien_formado(t))
 
+    def test_8x8_vacio(self):
+        t = tablero_8x8_vacio()
+        self.assertTrue(tablero_bien_formado(t))
+
+    def test_7x8_ancho_incompleto(self):
+        t = tablero_7x8_incompleto()
+        self.assertFalse(tablero_bien_formado(t))
+
+    def test_8x7_alto_incompleto(self):
+        t = tablero_8x7_incompleto()
+        self.assertFalse(tablero_bien_formado(t))
+
+    def test_7x7_ancho_y_alto_incompleto(self):
+        t = tablero_7x7_incompleto()
+        self.assertFalse(tablero_bien_formado(t))
+
 class test_posicion_en_tablero(unittest.TestCase):
 
     def test_posicion_ok(self):
         self.assertTrue(posicion_en_tablero(Posicion(5, 3)))
 
+    def test_fila_fuera_de_rango(self) -> None:
+        self.assertFalse(posicion_en_tablero(Posicion(8, 3)))
+
+    def test_columna_fuera_de_rango(self) -> None:
+        self.assertFalse(posicion_en_tablero(Posicion(0, 8)))
+
+    def test_fila_y_columna_fuera_de_rango(self) -> None:
+        self.assertFalse(posicion_en_tablero(Posicion(8, 8)))
+
+    def test_fila_y_columna_negativas(self) -> None:
+        self.assertFalse(posicion_en_tablero(Posicion(-1, -1)))
+
+    def test_columna_negativa(self) -> None:
+        self.assertFalse(posicion_en_tablero(Posicion(0, -1)))
+
+    def test_fila_negativa(self) -> None:
+        self.assertFalse(posicion_en_tablero(Posicion(-1, 0)))
+
 class test_movimiento_bien_formado(unittest.TestCase):
 
+    # --- MOVER_A_SECAS ---
     def test_movimiento_ok(self):
         self.assertTrue(movimiento_bien_formado(Movimiento(MOVER_A_SECAS, Posicion(0, 1), [NORTE])))
+
+    def test_movimiento_mover_a_secas_ok(self) -> None:
+        self.assertTrue(movimiento_bien_formado(Movimiento(MOVER_A_SECAS, Posicion(0, 1), [NORTE])))
+
+    def test_movimiento_mover_a_secas_sin_pasos(self) -> None:
+        self.assertFalse(movimiento_bien_formado(Movimiento(MOVER_A_SECAS, Posicion(0, 1), [])))
+
+    def test_movimiento_mover_a_secas_mas_de_un_paso(self) -> None:
+        self.assertFalse(movimiento_bien_formado(Movimiento(MOVER_A_SECAS, Posicion(0, 1), [NORTE, SUR])))
+
+    def test_movimiento_mover_a_secas_fuera_de_tablero(self) -> None:
+        self.assertFalse(movimiento_bien_formado(Movimiento(MOVER_A_SECAS, Posicion(8, 1), [NORTE])))
+
+    # --- ARRASTRAR ---
+    def test_movimiento_arrastrar_ok(self) -> None:
+        self.assertTrue(movimiento_bien_formado(Movimiento(ARRASTRAR, Posicion(0, 1), [NORTE, SUR])))
+
+    def test_movimiento_arrastrar_con_un_paso(self) -> None:
+        self.assertFalse(movimiento_bien_formado(Movimiento(ARRASTRAR, Posicion(0, 1), [NORTE])))
+
+    def test_movimiento_arrastrar_con_tres_pasos(self) -> None:
+        self.assertFalse(movimiento_bien_formado(Movimiento(ARRASTRAR, Posicion(0, 1), [NORTE, SUR, ESTE])))
+
+    def test_movimiento_arrastrar_fuera_de_tablero(self) -> None:
+        self.assertFalse(movimiento_bien_formado(Movimiento(ARRASTRAR, Posicion(8, 1), [NORTE, NORTE])))
+
+    # --- EMPUJAR ---
+    def test_movimiento_empujar_ok(self) -> None:
+        self.assertTrue(movimiento_bien_formado(Movimiento(EMPUJAR, Posicion(0, 1), [NORTE, SUR])))
+
+    def test_movimiento_empujar_con_un_paso(self) -> None:
+        self.assertFalse(movimiento_bien_formado(Movimiento(EMPUJAR, Posicion(0, 1), [NORTE])))
+
+    def test_movimiento_empujar_con_tres_pasos(self) -> None:
+        self.assertFalse(movimiento_bien_formado(Movimiento(EMPUJAR, Posicion(0, 1), [NORTE, SUR, ESTE])))
+
+    def test_movimiento_empujar_fuera_de_tablero(self) -> None:
+        self.assertFalse(movimiento_bien_formado(Movimiento(EMPUJAR, Posicion(8, 1), [NORTE, NORTE])))
+
+    # --- POSICIONES NEGATIVAS ---
+    def test_movimiento_posicion_negativa(self) -> None:
+        self.assertFalse(movimiento_bien_formado(Movimiento(MOVER_A_SECAS, Posicion(-1, 1), [NORTE])))
+
+    def test_movimiento_arrastrar_posicion_negativa(self) -> None:
+        self.assertFalse(movimiento_bien_formado(Movimiento(ARRASTRAR, Posicion(0, -1), [NORTE, NORTE])))
+
+    def test_movimiento_empujar_posicion_negativa(self) -> None:
+        self.assertFalse(movimiento_bien_formado(Movimiento(EMPUJAR, Posicion(-1, -1), [NORTE, NORTE])))
 
 class test_juego_bien_formado(unittest.TestCase):
 
     def test_juego_ok(self):
         j = Juego(tablero_8x8_vacio(), DORADO, 0)
+        self.assertTrue(juego_bien_formado(j))
+
+    # --- TABLEROS INVALIDOS ---
+    def test_juego_tablero_ancho_incompleto(self):
+        j = Juego(tablero_7x8_incompleto(), DORADO, 0)
+        self.assertFalse(juego_bien_formado(j))
+
+    def test_juego_tablero_ancho_y_alto_incompleto(self):
+        j = Juego(tablero_7x7_incompleto(), DORADO, 0)
+        self.assertFalse(juego_bien_formado(j))
+
+    def test_juego_tablero_alto_incompleto(self):
+        j = Juego(tablero_8x7_incompleto(), DORADO, 0)
+        self.assertFalse(juego_bien_formado(j))
+
+    def test_juego_pasos_consumidos_negativos(self):
+        j = Juego(tablero_8x8_vacio(), DORADO, -1)
+        self.assertFalse(juego_bien_formado(j))
+
+    
+    # --- PASOS INVALIDOS ---
+    def test_juego_pasos_consumidos_igual_a_maximo(self):
+        j = Juego(tablero_8x8_vacio(), DORADO, MAX_PASOS)
+        self.assertFalse(juego_bien_formado(j))
+
+    def test_juego_pasos_consumidos_mayor_a_maximo(self):
+        j = Juego(tablero_8x8_vacio(), DORADO, MAX_PASOS + 1)
+        self.assertFalse(juego_bien_formado(j))
+
+    # --- DISTINTO COLOR ---
+    def test_distinto_color_de_turno(self):
+        j = Juego(tablero_8x8_vacio(), PLATEADO, 0)
         self.assertTrue(juego_bien_formado(j))
 
 #### Ejercicio 2
