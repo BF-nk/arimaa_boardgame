@@ -55,7 +55,19 @@ def juego_bien_formado(j : Juego) -> bool:
 #### Ejercicio 2
 
 def posicion_vecina_hacia(pos : Posicion, d : Direccion) -> Posicion:
-    raise Exception("No implementado")
+    fila : int = pos.fila
+    columna : int = pos.columna
+
+    if d == NORTE:
+        fila += 1
+    elif d == SUR:
+        fila -= 1
+    elif d == ESTE:
+        columna += 1
+    elif d == OESTE:
+        columna -= 1
+    res : Posicion = Posicion(fila, columna)
+    return res
 
 def casilla_en_posicion(t : Tablero, p : Posicion) -> Casilla:
     raise Exception("No implementado")
