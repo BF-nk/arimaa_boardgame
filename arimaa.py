@@ -70,10 +70,17 @@ def posicion_vecina_hacia(pos : Posicion, d : Direccion) -> Posicion:
     return res
 
 def casilla_en_posicion(t : Tablero, p : Posicion) -> Casilla:
-    raise Exception("No implementado")
+
+    posicion : Casilla = t[p.fila][p.columna]
+    res : Casilla = posicion
+    return res
 
 def hay_casilla_vacia(t : Tablero, pos : Posicion) -> bool:
-    raise Exception("No implementado")
+
+    casilla : Casilla = casilla_en_posicion(t, pos)
+    res : bool = casilla == VACIA
+    
+    return res
 
 def hay_pieza_de_color(t : Tablero, pos : Posicion, col : Color) -> bool:
     raise Exception("No implementado")
