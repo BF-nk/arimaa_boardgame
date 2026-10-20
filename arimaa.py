@@ -23,16 +23,34 @@ def pasar_turno(j : Juego) -> Juego: # pragma: no cover
 #### Ejercicio 1
 
 def tablero_bien_formado(t : Tablero) -> bool:
-    raise Exception("No implementado")
+    bien_formado : bool = True
+    if len(t) != ALTO:
+        bien_formado = False
+    for fila in t:
+        if len(fila) != ANCHO:
+            bien_formado = False    
+    res : bool = bien_formado
+    return res
 
 def posicion_en_tablero(pos : Posicion) -> bool:
-    raise Exception("No implementado")
+    res: bool = (0 <= pos.fila < ALTO) and (0 <= pos.columna < ANCHO)
+    return res
 
 def movimiento_bien_formado(m : Movimiento) -> bool:
-    raise Exception("No implementado")
+    origen_valido : bool = posicion_en_tablero(m.origen)
 
+    pasos_validos : bool = False
+    if m.accion== MOVER_A_SECAS:
+        pasos_validos = len(m.pasos) == 1
+    elif m.accion== ARRASTRAR or m.accion== EMPUJAR:
+        pasos_validos = len(m.pasos) == 2
+
+    res : bool = origen_valido and pasos_validos
+    return res
+        
 def juego_bien_formado(j : Juego) -> bool:
-    raise Exception("No implementado")
+    res : bool = tablero_bien_formado(j.tablero) and 0 <= j.pasos_consumidos < MAX_PASOS
+    return res
 
 #### Ejercicio 2
 
