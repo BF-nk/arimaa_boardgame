@@ -70,12 +70,34 @@ def posicion_vecina_hacia(pos : Posicion, d : Direccion) -> Posicion:
     return res
 
 def casilla_en_posicion(t : Tablero, p : Posicion) -> Casilla:
+    """Devuelve la casilla en la posición p del tablero t.
+
+    PRE: tablero_bien_formado(t) and posicion_en_tablero(p)
+
+    Args:
+        t (Tablero): El tablero de juego.
+        p (Posicion): La posición a consultar en el tablero.
+
+    Returns:
+        Casilla: La casilla en la posición p.
+    """
 
     posicion : Casilla = t[p.fila][p.columna]
     res : Casilla = posicion
     return res
 
 def hay_casilla_vacia(t : Tablero, pos : Posicion) -> bool:
+    """Indica si en la posición pos del tablero t hay una casilla vacía.
+
+    PRE: tablero_bien_formado(t) and posicion_en_tablero(pos)
+
+    Args:
+        t (Tablero): El tablero de juego.
+        pos (Posicion): La posición a consultar en el tablero.
+
+    Returns:
+        True si hay una casilla vacía en pos, y False en caso contrario.
+    """
 
     casilla : Casilla = casilla_en_posicion(t, pos)
     res : bool = casilla == VACIA
