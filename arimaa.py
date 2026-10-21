@@ -398,6 +398,85 @@ def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
 
 #### Ejercicio 5
 
+## FUNCION AUXILIAR TABLERO ##
+
+def tableros_coinciden_en_la_posicion(t0, t1: Tablero, pos: Posicion) -> bool:
+    """Indica si los tableros t0 y t1 coinciden en la posición pos.
+
+    PRE: tablero_bien_formado(t0) and tablero_bien_formado(t1) and posicion_en_tablero(pos)
+
+    Args:
+        t0 (Tablero): El primer tablero a comparar.
+        t1 (Tablero): El segundo tablero a comparar.
+        pos (Posicion): La posición que se desea comparar entre los tableros.
+
+    Returns:
+        True si los tableros coinciden en pos, False en caso contrario.
+    """
+    res : bool = t0[pos.fila][pos.columna] == t1[pos.fila][pos.columna]
+    return res
+
+
+def coinciden_salvo_en_la_posicion(t0, t1: Tablero, pos: Posicion) -> bool:
+    """Indica si los tableros t0 y t1 coinciden en todas las posiciones salvo en pos.
+
+    PRE: tablero_bien_formado(t0) and tablero_bien_formado(t1) and posicion_en_tablero(pos)
+
+    Args:
+        t0 (Tablero): El primer tablero a comparar.
+        t1 (Tablero): El segundo tablero a comparar.
+        pos (Posicion): La posición que se permite que difiera entre los tableros.
+
+    Returns:
+        True si los tableros coinciden salvo en pos, False en caso contrario.
+    """
+
+    res: bool = True
+    for fila in range(ALTO):
+        for columna in range(ANCHO):
+            
+
+            
+
+    res : bool = True
+    for fila in range(ALTO):
+        for columna in range(ANCHO):
+            pos_actual : Posicion = Posicion(fila, columna)
+            if pos_actual != pos:
+                res = res and not tableros_coinciden_en_la_posicion(t0, t1, pos_actual)
+    return res
+
+def es_tablero_sacando_pieza(t0, t1: Tablero, pos: Posicion) -> bool:
+    """Indica si el tablero t1 es el resultado de sacar la pieza en pos del tablero t0.
+
+    PRE: tablero_bien_formado(t0) and tablero_bien_formado(t1) and posicion_en_tablero(pos)
+
+    Args:
+        t0 (Tablero): El tablero original.
+        t1 (Tablero): El tablero a comparar.
+        pos (Posicion): La posición de la pieza a sacar.
+
+    Returns:
+        True si t1 es el resultado de sacar la pieza en pos de t0, False en caso contrario.
+    """
+
+    res: bool = hay_casilla_vacia(t1, pos) and 
+
+
+
+
+
+
+    res : bool = True
+    for fila in range(ALTO):
+        for columna in range(ANCHO):
+            pos_actual : Posicion = Posicion(fila, columna)
+            if pos_actual == pos:
+                res = res and hay_casilla_vacia(t1, pos_actual)
+            else:
+                res = res and casilla_en_posicion(t0, pos_actual) == casilla_en_posicion(t1, pos_actual)
+    return res
+
 def activar_trampas(t : Tablero) -> Tablero:
     raise Exception("No implementado")
 
