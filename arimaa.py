@@ -264,31 +264,9 @@ def hay_pieza_congelada(t : Tablero, pos : Posicion) -> bool:
     return res
 
 #### Ejercicio 4
-##AUX 1 (veo si la direccion es valida)
-def es_una_direccion_valida(f:Figura, c: Color, d: Direccion) -> bool:
-    res:bool = True
-    if f == CONEJO:
-        if (c== DORADO) and (d== SUR):
-            res= False
-        elif (c== PLATEADO) and (d==NORTE):
-            res = False
-    return res 
-    ##AUX2 (una veo si esa posicion es efectivamente valida y a su vez chequeo que el espacio vecino
-    ##       a cual se traslada esta libre)
-         
-def direccion_de_movimiento_habilitada(t: Tablero, pos: Posicion, d:Direccion) -> bool:
-    pieza: Casilla = casilla_en_posicion(t,pos)
-    pos_vecina : Posicion = posicion_vecina_hacia(pos,d)
-    direccion_permitida: bool = es_una_direccion_valida (pieza.figura, pieza.color, d)
-    casilla_libre: bool = posicion_en_tablero(pos_vecina) and hay_casilla_vacia(t,pos_vecina)
-    return direccion_permitida and casilla_libre
-    
-    
+
 def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
-    pasos_suficientes: bool = (j.pasos_consumidos + len(m.pasos)) <= MAX_PASOS
-
-
-    
+    raise Exception("No implementado")
 
 #### Ejercicio 5
 
