@@ -59,6 +59,16 @@ def juego_bien_formado(j : Juego) -> bool:
 #### Ejercicio 2
 
 def posicion_vecina_hacia(pos : Posicion, d : Direccion) -> Posicion:
+    """Devuelve la posición vecina a pos en la dirección d.
+        PRE: posicion_en_tablero(pos) and d in DIRECCIONES
+
+    Args:
+        pos (Posicion): La posición de referencia.
+        d (Direccion): La dirección hacia la que se busca la posición vecina.
+
+    Returns:
+        Posicion: La posición vecina a pos en la dirección d.
+    """
     fila : int = pos.fila
     columna : int = pos.columna
 
