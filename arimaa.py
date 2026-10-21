@@ -53,7 +53,6 @@ def juego_bien_formado(j : Juego) -> bool:
     return res
 
 #### Ejercicio 2
-#### Funciones Auxiliares Ejercicio 2
 
 def posicion_vecina_hacia(pos : Posicion, d : Direccion) -> Posicion:
     fila : int = pos.fila
@@ -85,6 +84,39 @@ def hay_casilla_vacia(t : Tablero, pos : Posicion) -> bool:
 
 def hay_pieza(t : Tablero, pos : Posicion) -> bool:
     res : bool = not hay_casilla_vacia(t, pos)
+    return res
+
+def figura_en_posicion(t: Tablero, pos: Posicion) -> Figura:
+    """Devuelve la figura de la pieza ubicada en la posición pos del tablero.
+
+    PRE: tablero_bien_formado(t) and posicion_en_tablero(pos) and not hay_casilla_vacia(t, pos)
+
+    Args:
+        t (Tablero): El tablero de juego.
+        pos (Posicion): La posición a consultar.
+
+    Returns:
+        Figura: La figura de la pieza en dicha posición.
+    """
+    casilla: Casilla = casilla_en_posicion(t, pos)
+    res: Figura = casilla.figura
+    return res
+
+
+def color_en_posicion(t: Tablero, pos: Posicion) -> Color:
+    """Devuelve el color de la pieza ubicada en la posición pos del tablero.
+
+    PRE: tablero_bien_formado(t) and posicion_en_tablero(pos) and not hay_casilla_vacia(t, pos)
+
+    Args:
+        t (Tablero): El tablero de juego.
+        pos (Posicion): La posición a consultar.
+
+    Returns:
+        Color: El color de la pieza en dicha posición.
+    """
+    casilla: Casilla = casilla_en_posicion(t, pos)
+    res: Color = casilla.color
     return res
 
 def hay_pieza_de_color(t : Tablero, pos : Posicion, col : Color) -> bool:
