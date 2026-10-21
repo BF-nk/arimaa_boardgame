@@ -356,6 +356,7 @@ def hay_pieza_enemiga_mas_fuerte_vecina(t : Tablero, pos : Posicion) -> bool:
         
     return res
 ## COMENTARIO ##
+##HOla
 def hay_pieza_enemiga_mas_debil_vecina(t : Tablero, pos : Posicion) -> bool:
     """Indica si en alguna posición vecina válida a pos hay una pieza enemiga de menor fuerza.
 
