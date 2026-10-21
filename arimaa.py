@@ -71,6 +71,7 @@ def posicion_vecina_hacia(pos : Posicion, d : Direccion) -> Posicion:
     elif d == OESTE:
         columna -= 1
     res : Posicion = Posicion(fila, columna)
+    
     return res
 
 def casilla_en_posicion(t : Tablero, p : Posicion) -> Casilla:
@@ -355,44 +356,45 @@ def hay_pieza_enemiga_mas_fuerte_vecina(t : Tablero, pos : Posicion) -> bool:
         i = i + 1
         
     return res
-## COMENTARIO ##
-##HOla
-def hay_pieza_enemiga_mas_debil_vecina(t : Tablero, pos : Posicion) -> bool:
-    """Indica si en alguna posición vecina válida a pos hay una pieza enemiga de menor fuerza.
 
-    PRE: tablero_bien_formado(t) and posicion_en_tablero(pos) and not hay_casilla_vacia(t, pos)
+# def hay_pieza_enemiga_mas_debil_vecina(t : Tablero, pos : Posicion) -> bool:
+#     """Indica si en alguna posición vecina válida a pos hay una pieza enemiga de menor fuerza.
 
-    Args:
-        t (Tablero): El tablero de juego.
-        pos (Posicion): La posición a consultar.
+#     PRE: tablero_bien_formado(t) and posicion_en_tablero(pos) and not hay_casilla_vacia(t, pos)
 
-    Returns:
-        True si hay al menos una pieza enemiga contigua con menor fuerza, False en caso contrario.
-    """
-    casilla_actual: Casilla = casilla_en_posicion(t, pos)
+#     Args:
+#         t (Tablero): El tablero de juego.
+#         pos (Posicion): La posición a consultar.
+
+#     Returns:
+#         True si hay al menos una pieza enemiga contigua con menor fuerza, False en caso contrario.
+#     """
+#     casilla_actual: Casilla = casilla_en_posicion(t, pos)
     
-    res: bool = False
-    i: int = 0
+#     res: bool = False
+#     i: int = 0
     
-    while i < len(DIRECCIONES) and not res:
-        pos_vecina: Posicion = posicion_vecina_hacia(pos, DIRECCIONES[i])
+#     while i < len(DIRECCIONES) and not res:
+#         pos_vecina: Posicion = posicion_vecina_hacia(pos, DIRECCIONES[i])
         
-        if es_vecino_enemigo(t, pos, pos_vecina):
-            casilla_vecina: Casilla = casilla_en_posicion(t, pos_vecina)
-            if es_mas_fuerte(casilla_actual.figura, casilla_vecina.figura):
-                res = True
+#         if es_vecino_enemigo(t, pos, pos_vecina):
+#             casilla_vecina: Casilla = casilla_en_posicion(t, pos_vecina)
+#             if es_mas_fuerte(casilla_actual.figura, casilla_vecina.figura):
+#                 res = True
                 
-        i = i + 1
+#         i = i + 1
         
-    return res
+#     return res
 
 def hay_pieza_congelada(t : Tablero, pos : Posicion) -> bool:
-    raise Exception("No implementado")
+    res : bool = hay_pieza(t, pos) and hay_pieza_enemiga_mas_fuerte_vecina(t, pos) and not hay_pieza_amiga_vecina(t, pos)
+    return res
 
 #### Ejercicio 4
 
 def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
     raise Exception("No implementado")
+
 
 #### Ejercicio 5
 
