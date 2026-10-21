@@ -1,3 +1,5 @@
+from operator import pos
+
 from definiciones import *
 
 #### Algunas funciones ya dadas
@@ -19,6 +21,8 @@ def direccion_desde_hasta(pos1 : Posicion, pos2 : Posicion) -> Direccion: # prag
 
 def pasar_turno(j : Juego) -> Juego: # pragma: no cover
     return Juego(j.tablero, oponente(j.turno), 0)
+
+DIRECCIONES : list[Direccion] = [NORTE, SUR, ESTE, OESTE]
 
 #### Ejercicio 1
 
@@ -198,7 +202,7 @@ def hay_pieza_de_color(t : Tablero, pos : Posicion, col : Color) -> bool:
     
     res : bool = False
     if hay_pieza(t, pos):
-        res : bool = color_en_posicion(t, pos) == col
+        res = color_en_posicion(t, pos) == col
 
     return res
 
@@ -215,15 +219,171 @@ def hay_casilla_vacia_hacia(t : Tablero, pos : Posicion, d : Direccion) -> bool:
     res : bool = hay_casilla_vacia(t, posicion_vecina_hacia(pos, d))
     return res
 
+def es_vecino_valido(pos1 : Posicion, pos2 : Posicion) -> bool:
+    """Indica si dos posiciones son vecinas válidas en el tablero.
+
+    PRE: True
+
+    Args:
+        pos1 (Posicion): La primera posición.
+        pos2 (Posicion): La segunda posición.
+
+    Returns:
+        True si las posiciones son vecinas válidas, y False en caso contrario.
+    """
+    res : bool = posicion_en_tablero(pos1) and posicion_en_tablero(pos2) and son_posiciones_vecinas(pos1, pos2)
+    return res
+
+def hay_pieza_vecina_de_color(t: Tablero, pos: Posicion, col: Color) -> bool:
+    """Indica si en alguna posición vecina válida a pos hay una pieza del color col.
+
+    PRE: tablero_bien_formado(t) and posicion_en_tablero(pos)
+
+    Args:
+        t (Tablero): El tablero de juego.
+        pos (Posicion): La posición a consultar.
+        col (Color): El color de la pieza buscada.
+
+    Returns:
+        True si hay una pieza vecina de color col, y False en caso contrario.    
+    """
+    res: bool = False
+    i: int = 0
+    
+    while i < len(DIRECCIONES) and not res:
+        pos_vecina: Posicion = posicion_vecina_hacia(pos, DIRECCIONES[i])
+        
+        if es_vecino_valido(pos, pos_vecina) and hay_pieza_de_color(t, pos_vecina, col):
+            res = True
+            
+        i += 1
+        
+    return res
+
 def hay_pieza_amiga_vecina(t : Tablero, pos : Posicion) -> bool:
-    res : bool = not hay_casilla_vacia(t, pos) and hay_pieza_de_color(t, pos, casilla_en_posicion(t, pos).color)
+    casilla : Casilla = casilla_en_posicion(t, pos)
+    res : bool = hay_pieza_vecina_de_color(t, pos, casilla.color)
+    return res
+
+def hay_pieza_enemiga_vecina(t : Tablero, pos : Posicion) -> bool:
+    casilla : Casilla = casilla_en_posicion(t, pos)
+    color_oponente : Color = oponente(casilla.color)
+    res : bool = hay_pieza_vecina_de_color(t, pos, color_oponente)
+    return res
+
+def es_enemiga_comparando_fuerza(t: Tablero, pos: Posicion, d: Direccion, buscar_mas_debil: bool) -> bool:
+    """Indica si la pieza vecina en dirección d es enemiga y cumple la relación de fuerza buscada.
+
+    PRE: tablero_bien_formado(t) and posicion_en_tablero(pos) and not hay_casilla_vacia(t, pos)
+    """
+    pos_vecina: Posicion = posicion_vecina_hacia(pos, d)
+    res: bool = False
+
+    if es_vecino_valido(pos, pos_vecina) and hay_pieza_enemiga(t, pos_vecina, color_en_posicion(t, pos)):
+        casilla: Casilla = casilla_en_posicion(t, pos)
+        casilla_vecina: Casilla = casilla_en_posicion(t, pos_vecina)
+        if buscar_mas_debil:
+            res = es_mas_fuerte(casilla.figura, casilla_vecina.figura)
+        else:
+            res = es_mas_fuerte(casilla_vecina.figura, casilla.figura)
+
     return res
 
 def hay_pieza_enemiga_mas_debil_hacia(t : Tablero, pos : Posicion, d : Direccion) -> bool:
-    raise Exception("No implementado")
+    """Indica si en la dirección d desde pos hay una pieza enemiga de menor fuerza.
+
+    PRE: tablero_bien_formado(t) and posicion_en_tablero(pos) and not hay_casilla_vacia(t, pos)
+
+    Args:
+        t (Tablero): El tablero de juego.
+        pos (Posicion): La posición a consultar.
+        d (Direccion): La dirección vecina a evaluar.
+
+    Returns:
+        True si hay una pieza enemiga de menor fuerza en la dirección d, False en caso contrario.
+    """
+    buscar_mas_debil: bool = True
+    res: bool = es_enemiga_comparando_fuerza(t, pos, d, buscar_mas_debil)
+    return res
+
+def hay_pieza_enemiga_mas_fuerte_hacia(t : Tablero, pos : Posicion, d : Direccion) -> bool:
+    """Indica si en la dirección d desde pos hay una pieza enemiga de mayor fuerza.
+
+    PRE: tablero_bien_formado(t) and posicion_en_tablero(pos) and not hay_casilla_vacia(t, pos)
+
+    Args:
+        t (Tablero): El tablero de juego.
+        pos (Posicion): La posición a consultar.
+        d (Direccion): La dirección vecina a evaluar.
+
+    Returns:
+        True si hay una pieza enemiga de mayor fuerza en la dirección d, False en caso contrario.
+    """
+    buscar_mas_debil: bool = False
+    res: bool = es_enemiga_comparando_fuerza(t, pos, d, buscar_mas_debil)
+    return res
+
+def es_vecino_enemigo(t : Tablero, pos1 : Posicion, pos2 : Posicion) -> bool:
+    res : bool = es_vecino_valido(pos1, pos2) and hay_pieza_enemiga(t, pos2, color_en_posicion(t, pos1))
+    return res
 
 def hay_pieza_enemiga_mas_fuerte_vecina(t : Tablero, pos : Posicion) -> bool:
-    raise Exception("No implementado")
+    """Indica si en alguna posición vecina válida a pos hay una pieza enemiga de mayor fuerza.
+
+    PRE: tablero_bien_formado(t) and posicion_en_tablero(pos) and not hay_casilla_vacia(t, pos)
+
+    Args:
+        t (Tablero): El tablero de juego.
+        pos (Posicion): La posición a consultar.
+
+    Returns:
+        True si hay al menos una pieza enemiga contigua con mayor fuerza, False en caso contrario.
+    """
+    casilla_actual: Casilla = casilla_en_posicion(t, pos)
+    
+    res: bool = False
+    i: int = 0
+    
+    while i < len(DIRECCIONES) and not res:
+        pos_vecina: Posicion = posicion_vecina_hacia(pos, DIRECCIONES[i])
+        
+        if es_vecino_enemigo(t, pos, pos_vecina):
+            casilla_vecina: Casilla = casilla_en_posicion(t, pos_vecina)
+            if es_mas_fuerte(casilla_vecina.figura, casilla_actual.figura):
+                res = True
+                
+        i = i + 1
+        
+    return res
+
+def hay_pieza_enemiga_mas_debil_vecina(t : Tablero, pos : Posicion) -> bool:
+    """Indica si en alguna posición vecina válida a pos hay una pieza enemiga de menor fuerza.
+
+    PRE: tablero_bien_formado(t) and posicion_en_tablero(pos) and not hay_casilla_vacia(t, pos)
+
+    Args:
+        t (Tablero): El tablero de juego.
+        pos (Posicion): La posición a consultar.
+
+    Returns:
+        True si hay al menos una pieza enemiga contigua con menor fuerza, False en caso contrario.
+    """
+    casilla_actual: Casilla = casilla_en_posicion(t, pos)
+    
+    res: bool = False
+    i: int = 0
+    
+    while i < len(DIRECCIONES) and not res:
+        pos_vecina: Posicion = posicion_vecina_hacia(pos, DIRECCIONES[i])
+        
+        if es_vecino_enemigo(t, pos, pos_vecina):
+            casilla_vecina: Casilla = casilla_en_posicion(t, pos_vecina)
+            if es_mas_fuerte(casilla_actual.figura, casilla_vecina.figura):
+                res = True
+                
+        i = i + 1
+        
+    return res
 
 def hay_pieza_congelada(t : Tablero, pos : Posicion) -> bool:
     raise Exception("No implementado")
