@@ -197,6 +197,7 @@ def es_mas_fuerte(f1: Figura, f2: Figura) -> bool:
     return res
 
 ## -- CONTINUA EJERCICIO 2  -- ##
+#hola
 
 def hay_pieza_de_color(t : Tablero, pos : Posicion, col : Color) -> bool:
     
