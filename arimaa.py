@@ -53,6 +53,7 @@ def juego_bien_formado(j : Juego) -> bool:
     return res
 
 #### Ejercicio 2
+#### Funciones Auxiliares Ejercicio 2
 
 def posicion_vecina_hacia(pos : Posicion, d : Direccion) -> Posicion:
     fila : int = pos.fila
@@ -82,12 +83,24 @@ def hay_casilla_vacia(t : Tablero, pos : Posicion) -> bool:
 
     return res
 
+def hay_pieza(t : Tablero, pos : Posicion) -> bool:
+    res : bool = not hay_casilla_vacia(t, pos)
+    return res
+
 def hay_pieza_de_color(t : Tablero, pos : Posicion, col : Color) -> bool:
     
     res : bool = False
-    if not hay_casilla_vacia(t, pos):
+    if hay_pieza(t, pos):
         casilla : Casilla = casilla_en_posicion(t, pos)
         res = casilla.color == col
+
+    return res
+
+def hay_pieza_enemiga(t : Tablero, pos : Posicion, col : Color) -> bool:
+    res : bool = False
+    if hay_pieza(t, pos):
+        casilla : Casilla = casilla_en_posicion(t, pos)
+        res = casilla.color != col
 
     return res
 
