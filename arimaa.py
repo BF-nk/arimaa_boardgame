@@ -70,25 +70,150 @@ def posicion_vecina_hacia(pos : Posicion, d : Direccion) -> Posicion:
     return res
 
 def casilla_en_posicion(t : Tablero, p : Posicion) -> Casilla:
+    """Devuelve la casilla en la posición p del tablero t.
+
+    PRE: tablero_bien_formado(t) and posicion_en_tablero(p)
+
+    Args:
+        t (Tablero): El tablero de juego.
+        p (Posicion): La posición a consultar en el tablero.
+
+    Returns:
+        Casilla: La casilla en la posición p.
+    """
 
     posicion : Casilla = t[p.fila][p.columna]
     res : Casilla = posicion
     return res
 
 def hay_casilla_vacia(t : Tablero, pos : Posicion) -> bool:
+    """Indica si en la posición pos del tablero t hay una casilla vacía.
+
+    PRE: tablero_bien_formado(t) and posicion_en_tablero(pos)
+
+    Args:
+        t (Tablero): El tablero de juego.
+        pos (Posicion): La posición a consultar en el tablero.
+
+    Returns:
+        True si hay una casilla vacía en pos, y False en caso contrario.
+    """
 
     casilla : Casilla = casilla_en_posicion(t, pos)
     res : bool = casilla == VACIA
 
     return res
 
+## -- FUNCIONES AUXILIARES  -- ##
+
+def hay_pieza(t : Tablero, pos : Posicion) -> bool:
+    """Indica si en la posición pos del tablero t hay una pieza.
+
+    PRE: tablero_bien_formado(t) and posicion_en_tablero(pos)
+
+    Args:
+        t (Tablero): El tablero de juego.
+        pos (Posicion): La posición a consultar en el tablero.
+
+    Returns:
+        True si hay una pieza en pos, y False en caso contrario.
+    """
+    res : bool = not hay_casilla_vacia(t, pos)
+    return res
+
+def figura_en_posicion(t: Tablero, pos: Posicion) -> Figura:
+    """Devuelve la figura de la pieza ubicada en la posición pos del tablero.
+
+    PRE: tablero_bien_formado(t) and posicion_en_tablero(pos) and not hay_casilla_vacia(t, pos)
+
+    Args:
+        t (Tablero): El tablero de juego.
+        pos (Posicion): La posición a consultar.
+
+    Returns:
+        Figura: La figura de la pieza en dicha posición.
+    """
+    casilla: Casilla = casilla_en_posicion(t, pos)
+    res: Figura = casilla.figura
+    return res
+
+
+def color_en_posicion(t: Tablero, pos: Posicion) -> Color:
+    """Devuelve el color de la pieza ubicada en la posición pos del tablero.
+
+    PRE: tablero_bien_formado(t) and posicion_en_tablero(pos) and not hay_casilla_vacia(t, pos)
+
+    Args:
+        t (Tablero): El tablero de juego.
+        pos (Posicion): La posición a consultar.
+
+    Returns:
+        Color: El color de la pieza en dicha posición.
+    """
+    casilla: Casilla = casilla_en_posicion(t, pos)
+    res: Color = casilla.color
+    return res
+
+def hay_figura_de_color(t: Tablero, pos: Posicion, f: Figura, col: Color) -> bool:
+    """Indica si en la posición pos del tablero t hay una pieza de la figura f y del color col.
+
+    PRE: tablero_bien_formado(t) and posicion_en_tablero(pos)
+
+    Args:
+        t (Tablero): El tablero de juego.
+        pos (Posicion): La posición a consultar en el tablero.
+        f (Figura): La figura de la pieza buscada.
+        col (Color): El color de la pieza buscada.
+
+    Returns:
+        True si hay una pieza en pos con la figura f y el color col, y False en caso contrario.
+    """
+    res: bool = False
+    
+    if hay_pieza(t, pos):
+        misma_figura: bool = figura_en_posicion(t, pos) == f
+        mismo_color: bool = color_en_posicion(t, pos) == col
+        res = misma_figura and mismo_color
+
+    return res
+
+def hay_figura_enemiga(t: Tablero, pos: Posicion, f: Figura, col: Color) -> bool:
+    """Indica si en la posición pos del tablero t hay una pieza de la figura f y de color distinto a col.
+
+    PRE: tablero_bien_formado(t) and posicion_en_tablero(pos)
+
+    Args:
+        t (Tablero): El tablero de juego.
+        pos (Posicion): La posición a consultar en el tablero.
+        f (Figura): La figura de la pieza buscada.
+        col (Color): El color de la pieza buscada.
+
+    Returns:
+        True si hay una pieza en pos con la figura f y un color distinto a col, y False en caso contrario.
+    """
+    res: bool = False
+    
+    if hay_pieza(t, pos):
+        misma_figura: bool = figura_en_posicion(t, pos) == f
+        distinto_color: bool = color_en_posicion(t, pos) == oponente(col)
+        res = misma_figura and distinto_color
+
+    return res
+
+## -- CONTINUA EJERCICIO 2  -- ##
+
 def hay_pieza_de_color(t : Tablero, pos : Posicion, col : Color) -> bool:
     
     res : bool = False
-    if not hay_casilla_vacia(t, pos):
-        casilla : Casilla = casilla_en_posicion(t, pos)
-        res = casilla.color == col
+    if hay_pieza(t, pos):
+        res : bool = color_en_posicion(t, pos) == col
 
+    return res
+
+def hay_pieza_enemiga(t : Tablero, pos : Posicion, col : Color) -> bool:
+    res : bool = False
+    if hay_pieza(t, pos):
+        res : bool = color_en_posicion(t, pos) == oponente(col)
     return res
 
 #### Ejercicio 3
