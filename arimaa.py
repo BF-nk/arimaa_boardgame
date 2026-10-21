@@ -108,6 +108,14 @@ def esPosicionVecinaHacia(pos1 : Posicion, pos2 : Posicion, d : Direccion) -> bo
     return res
 
 def casilla_en_posicion(t : Tablero, p : Posicion) -> Casilla:
+    """Devuelve la posición p de una casilla en el tablero t
+
+    PRE:
+        tablero_bien_formado(t)
+        posicion_en_tablero(t)
+
+    
+    """
     res : Casilla = t[p.fila][p.columna]
     return res
 
@@ -269,7 +277,7 @@ def es_una_direccion_valida(f:Figura, c: Color, d: Direccion) -> bool:
     ##       a cual se traslada esta libre)
          
 def direccion_de_movimiento_habilitada(t: Tablero, pos: Posicion, d:Direccion) -> bool:
-    pieza: Pieza = casilla_en_posicion(t,pos)
+    pieza: Casilla = casilla_en_posicion(t,pos)
     pos_vecina : Posicion = posicion_vecina_hacia(pos,d)
     direccion_permitida: bool = es_una_direccion_valida (pieza.figura, pieza.color, d)
     casilla_libre: bool = posicion_en_tablero(pos_vecina) and hay_casilla_vacia(t,pos_vecina)
