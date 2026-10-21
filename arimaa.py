@@ -177,27 +177,19 @@ def hay_figura_de_color(t: Tablero, pos: Posicion, f: Figura, col: Color) -> boo
 
     return res
 
-def hay_figura_enemiga(t: Tablero, pos: Posicion, f: Figura, col: Color) -> bool:
-    """Indica si en la posición pos del tablero t hay una pieza de la figura f y de color distinto a col.
+def es_mas_fuerte(f1: Figura, f2: Figura) -> bool:
+    """Indica si la figura f1 es más fuerte que la figura f2.
 
-    PRE: tablero_bien_formado(t) and posicion_en_tablero(pos)
+    PRE: f1 in FIGURAS and f2 in FIGURAS
 
     Args:
-        t (Tablero): El tablero de juego.
-        pos (Posicion): La posición a consultar en el tablero.
-        f (Figura): La figura de la pieza buscada.
-        col (Color): El color de la pieza buscada.
+        f1 (Figura): La primera figura a comparar.
+        f2 (Figura): La segunda figura a comparar.
 
     Returns:
-        True si hay una pieza en pos con la figura f y un color distinto a col, y False en caso contrario.
+        True si f1 es más fuerte que f2, y False en caso contrario.
     """
-    res: bool = False
-    
-    if hay_pieza(t, pos):
-        misma_figura: bool = figura_en_posicion(t, pos) == f
-        distinto_color: bool = color_en_posicion(t, pos) == oponente(col)
-        res = misma_figura and distinto_color
-
+    res : bool = fuerza(f1) > fuerza(f2)
     return res
 
 ## -- CONTINUA EJERCICIO 2  -- ##
@@ -210,11 +202,12 @@ def hay_pieza_de_color(t : Tablero, pos : Posicion, col : Color) -> bool:
 
     return res
 
+## FUNCION AUXILIAR DE PIEZA ENEMIGA ##
+
 def hay_pieza_enemiga(t : Tablero, pos : Posicion, col : Color) -> bool:
-    res : bool = False
-    if hay_pieza(t, pos):
-        res : bool = color_en_posicion(t, pos) == oponente(col)
+    res : bool = hay_pieza_de_color(t, pos, oponente(col))
     return res
+
 
 #### Ejercicio 3
 
