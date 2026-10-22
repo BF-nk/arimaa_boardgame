@@ -413,17 +413,17 @@ def hayPiezaEnemigaMasDebilHacia(t : Tablero, pos : Posicion, d : Direccion) -> 
     posicion_enemiga : Posicion = posicion_vecina_hacia(pos, d) #hayFiguraDeColor se fija si es una pos valida
     color_enemigo : Color = oponente(casilla_en_posicion(t, pos).color)
     figura_propia : Figura = casilla_en_posicion(t, pos).figura
-
+    res : bool = False
     i : int = 0
-    while i < len(FIGURAS):
+    while i < len(FIGURAS) and not res:
         figura_enemiga : Figura = FIGURAS[i]
 
         hay_enemiga : bool = hayFiguraDeColor(t, posicion_enemiga, figura_enemiga, color_enemigo)
-        es_mas_fuerte : bool = esMasFuerte(figura_enemiga, figura_propia)
-
+        es_mas_fuerte : bool = esMasFuerte(figura_propia, figura_enemiga)
+        res = hay_enemiga and es_mas_fuerte
         i += 1
 
-    res : bool = hay_enemiga and es_mas_fuerte
+    
     return res
 
 
@@ -472,7 +472,7 @@ def hayPiezaEnemigaMasFuerteHacia(t : Tablero, pos : Posicion, d : Direccion) ->
         figura_enemiga : Figura = FIGURAS[i]
 
         hay_enemiga : bool = hayFiguraDeColor(t, posicion_enemiga, figura_enemiga, color_enemigo)
-        es_mas_fuerte : bool = esMasFuerte(figura_propia, figura_enemiga)
+        es_mas_fuerte : bool = esMasFuerte(figura_enemiga, figura_propia)
         res = hay_enemiga and es_mas_fuerte
 
         i += 1
