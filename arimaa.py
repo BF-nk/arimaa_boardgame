@@ -29,6 +29,16 @@ FIGURAS : list[Figura] = [ELEFANTE, CAMELLO, CABALLO, PERRO, GATO, CONEJO]
 #### Ejercicio 1
 
 def tablero_bien_formado(t : Tablero) -> bool:
+    """Indica si el tablero t cumple con la estructura y dimensiones bien formadas (8x8).
+
+    PRE: True
+
+    Args:
+        t (Tablero): El estado del tablero a evaluar.
+
+    Returns:
+        bool: True si el tablero está bien formado, y False en caso contrario.
+    """
     bien_formado : bool = True
     if len(t) != ALTO:
         bien_formado = False
@@ -39,10 +49,30 @@ def tablero_bien_formado(t : Tablero) -> bool:
     return res
 
 def posicion_en_tablero(pos : Posicion) -> bool:
+    """Indica si la posición pos se encuentra dentro de los límites válidos del tablero (8x8).
+
+    PRE: True
+
+    Args:
+        pos (Posicion): La posición a evaluar.
+
+    Returns:
+        bool: True si la posición está dentro del tablero, y False en caso contrario.
+    """
     res: bool = (0 <= pos.fila < ALTO) and (0 <= pos.columna < ANCHO)
     return res
 
 def movimiento_bien_formado(m : Movimiento) -> bool:
+    """Indica si la estructura del movimiento m es válida en origen, cantidad de pasos y tipo de acción.
+
+    PRE: True
+
+    Args:
+        m (Movimiento): El movimiento a evaluar.
+
+    Returns:
+        bool: True si el movimiento está bien formado, y False en caso contrario.
+    """
     origen_valido : bool = posicion_en_tablero(m.origen)
 
     pasos_validos : bool = False
@@ -55,6 +85,16 @@ def movimiento_bien_formado(m : Movimiento) -> bool:
     return res
         
 def juego_bien_formado(j : Juego) -> bool:
+    """Indica si el estado del juego j está bien formado en su tablero, turno y cantidad de pasos consumidos.
+
+    PRE: True
+
+    Args:
+        j (Juego): El estado del juego a evaluar.
+
+    Returns:
+        bool: True si el juego está bien formado, y False en caso contrario.
+    """
     res : bool = tablero_bien_formado(j.tablero) and 0 <= j.pasos_consumidos < MAX_PASOS
     return res
 
@@ -63,7 +103,8 @@ def juego_bien_formado(j : Juego) -> bool:
 
 def posicion_vecina_hacia(pos : Posicion, d : Direccion) -> Posicion:
     """Devuelve la posición vecina a pos en la dirección d.
-        PRE: posicion_en_tablero(pos) and d in DIRECCIONES
+
+    PRE: posicion_en_tablero(pos) and d in DIRECCIONES
 
     Args:
         pos (Posicion): La posición de referencia.
@@ -114,6 +155,12 @@ def casilla_en_posicion(t : Tablero, p : Posicion) -> Casilla:
         tablero_bien_formado(t)
         posicion_en_tablero(t)
 
+    Args:
+        t (Tablero): El tablero del juego.
+        p (Posición): La posición de la casilla.
+    
+    Returns:
+        Casilla: La casilla en el tablero t asociada a la posición p.
     
     """
     res : Casilla = t[p.fila][p.columna]
@@ -138,6 +185,20 @@ def hay_casilla_vacia(t: Tablero, pos: Posicion) -> bool:
     return res
 
 def hayFiguraDeColor(t : Tablero, pos : Posicion, f : Figura, col : Color) -> bool:
+    """Indica si la posición pos está en el tablero y contiene una figura f de color col.
+
+    PRE:
+        tablero_bien_formado(t)
+
+    Args:
+        t (Tablero): El estado actual del tablero.
+        pos (Posicion): La posición a consultar.
+        f (Figura): La figura a verificar.
+        col (Color): El color de la pieza a verificar.
+
+    Returns:
+        bool: True si la posición es válida y contiene la figura f de color col, y False en caso contrario.
+    """
     posicion_valida : bool = posicion_en_tablero(pos)
     
     res : bool = False
@@ -148,6 +209,19 @@ def hayFiguraDeColor(t : Tablero, pos : Posicion, f : Figura, col : Color) -> bo
     return res
 
 def hayPieza(t: Tablero, pos: Posicion) -> bool:
+    """Indica si existe alguna pieza (de cualquier figura y color) en la posición pos del tablero.
+
+    PRE:
+        tablero_bien_formado(t)
+        posicion_en_tablero(pos)
+
+    Args:
+        t (Tablero): El estado actual del tablero.
+        pos (Posicion): La posición a consultar.
+
+    Returns:
+        bool: True si hay una pieza ocupando la posición pos, y False en caso contrario.
+    """
     i : int = 0
     res : bool = False
     while i < len(FIGURAS) and not res:
@@ -157,6 +231,20 @@ def hayPieza(t: Tablero, pos: Posicion) -> bool:
     return res
 
 def hayPiezaDeColor(t: Tablero, pos : Posicion, col : Color) -> bool:
+    """Indica si en la posición pos del tablero hay alguna pieza que pertenezca al color col.
+
+    PRE:
+        tablero_bien_formado(t)
+        posicion_en_tablero(pos)
+
+    Args:
+        t (Tablero): El estado actual del tablero.
+        pos (Posicion): La posición a consultar.
+        col (Color): El color a verificar.
+
+    Returns:
+        bool: True si la posición pos contiene una pieza del color col, y False en caso contrario.
+    """
 
     i : int = 0
     res : bool = False
@@ -168,12 +256,41 @@ def hayPiezaDeColor(t: Tablero, pos : Posicion, col : Color) -> bool:
     return res
 
 def hay_pieza_de_color(t : Tablero, pos : Posicion, col : Color) -> bool:
+    """Determina si la posición pos del tablero contiene una pieza correspondiente al color col.
+
+    PRE:
+        tablero_bien_formado(t)
+        posicion_en_tablero(pos)
+
+    Args:
+        t (Tablero): El estado actual del tablero.
+        pos (Posicion): La posición a consultar.
+        col (Color): El color a verificar (DORADO o PLATEADO).
+
+    Returns:
+        bool: True si en pos se encuentra una pieza de color col, y False en caso contrario.
+    """
     res : bool = hayPiezaDeColor(t, pos, col)
     return res
 
 #### Ejercicio 3
 
 def hayCasillaVaciaHacia(t : Tablero, pos : Posicion, d : Direccion) -> bool:
+    """Indica si en la dirección d desde la posición pos existe una casilla dentro del tablero que esté vacía.
+
+    PRE:
+        tablero_bien_formado(t)
+        posicion_en_tablero(pos)
+
+    Args:
+        t (Tablero): El estado del tablero.
+        pos (Posicion): La posición de origen.
+        d (Direccion): La dirección hacia la cual evaluar.
+
+    Returns:
+        bool: True si la casilla vecina está dentro del tablero y se encuentra vacía, y False en caso contrario.
+    """
+
     posicion_vecina : Posicion = posicion_vecina_hacia(pos, d)
     posicion_valida : bool = posicion_en_tablero(posicion_vecina)
     res : bool = False
@@ -182,16 +299,59 @@ def hayCasillaVaciaHacia(t : Tablero, pos : Posicion, d : Direccion) -> bool:
     return res
 
 def hay_casilla_vacia_hacia(t : Tablero, pos : Posicion, d : Direccion) -> bool:
+    """Determina si existe una casilla vacía en la dirección d contigua a pos.
+
+    PRE:
+        tablero_bien_formado(t)
+        posicion_en_tablero(pos)
+
+    Args:
+        t (Tablero): El estado del tablero.
+        pos (Posicion): La posición de origen.
+        d (Direccion): La dirección a evaluar.
+
+    Returns:
+        bool: True si la posición vecina en dirección d está dentro del tablero y vacía, y False en caso contrario.
+    """
     res : bool = hayCasillaVaciaHacia(t, pos, d)
     return res
 
 def hayPiezaAmigaHacia(t : Tablero, pos : Posicion, d : Direccion) -> bool:
+    """Indica si en la posición vecina hacia la dirección d hay una pieza del mismo color que la de pos.
+
+    PRE:
+        tablero_bien_formado(t)
+        posicion_en_tablero(pos)
+        hayPieza(t, pos)
+
+    Args:
+        t (Tablero): El estado del tablero.
+        pos (Posicion): La posición de la pieza propia.
+        d (Direccion): La dirección ortogonal a evaluar.
+
+    Returns:
+        bool: True si en la dirección d se encuentra una pieza amiga, y False en caso contrario.
+    """
     color_pieza : Color = casilla_en_posicion(t, pos).color
     posicion_vecina : Posicion = posicion_vecina_hacia(pos, d)
     res : bool = hayPiezaDeColor(t, posicion_vecina, color_pieza)
     return res
 
 def hayPiezaAmigaVecina(t : Tablero, pos : Posicion) -> bool:
+    """Verifica si la pieza en la posición pos tiene al menos una pieza del mismo color en alguna dirección adyacente.
+
+    PRE:
+        tablero_bien_formado(t)
+        posicion_en_tablero(pos)
+        hayPieza(t, pos)
+
+    Args:
+        t (Tablero): El estado del tablero.
+        pos (Posicion): La posición de la pieza a consultar.
+
+    Returns:
+        bool: True si existe alguna pieza amiga en las casillas vecinas, y False en caso contrario.
+    """
     res : bool = False
     i : int = 0
     while i < len(DIRECCIONES) and not res:
@@ -201,65 +361,179 @@ def hayPiezaAmigaVecina(t : Tablero, pos : Posicion) -> bool:
     return res
 
 def hay_pieza_amiga_vecina(t : Tablero, pos : Posicion) -> bool:
+    """Indica si la pieza ubicada en pos cuenta con al menos una pieza amiga adyacente.
+
+    PRE:
+        tablero_bien_formado(t)
+        posicion_en_tablero(pos)
+        hayPieza(t, pos)
+
+    Args:
+        t (Tablero): El estado del tablero.
+        pos (Posicion): La posición de la pieza a verificar.
+
+    Returns:
+        bool: True si la pieza en pos tiene alguna pieza amiga vecina, y False en caso contrario.
+    """
     res : bool = hayPiezaAmigaVecina(t, pos)
     return res
 
 def esMasFuerte(f1 : Figura, f2 : Figura) -> bool:
+    """Indica si la figura f1 tiene estrictamente mayor fuerza que la figura f2.
+
+    PRE:
+        f1, f2 in FIGURAS
+
+    Args:
+        f1 (Figura): La primera figura.
+        f2 (Figura): La segunda figura a comparar.
+
+    Returns:
+        bool: True si la fuerza de f1 es mayor que la de f2, y False en caso contrario.
+    """
     res : bool = fuerza(f1) > fuerza(f2)
     return res
 
 def hayPiezaEnemigaMasDebilHacia(t : Tablero, pos : Posicion, d : Direccion) -> bool:
+    """Indica si en la dirección d desde pos hay una pieza del oponente con estrictamente menor fuerza que la propia.
+
+    PRE:
+        tablero_bien_formado(t)
+        posicion_en_tablero(pos)
+        hayPieza(t, pos)
+
+    Args:
+        t (Tablero): El estado del tablero.
+        pos (Posicion): La posición de la pieza propia.
+        d (Direccion): La dirección hacia la cual evaluar.
+
+    Returns:
+        bool: True si en la dirección d existe una pieza enemiga más débil, y False en caso contrario.
+    """
     posicion_enemiga : Posicion = posicion_vecina_hacia(pos, d) #hayFiguraDeColor se fija si es una pos valida
     color_enemigo : Color = oponente(casilla_en_posicion(t, pos).color)
     figura_propia : Figura = casilla_en_posicion(t, pos).figura
-
+    res : bool = False
     i : int = 0
-    while i < len(FIGURAS):
-        figura_enemiga : Figura = FIGURAS[i]
-
-        hay_enemiga : bool = hayFiguraDeColor(t, posicion_enemiga, figura_enemiga, color_enemigo)
-        es_mas_fuerte : bool = esMasFuerte(figura_enemiga, figura_propia)
-
-        i += 1
-
-    res : bool = hay_enemiga and es_mas_fuerte
-    return res
-
-
-def hay_pieza_enemiga_mas_debil_hacia(t : Tablero, pos : Posicion, d : Direccion) -> bool:
-    res : bool = hayPiezaEnemigaMasDebilHacia(t, pos, d)
-    return res
-
-def hayPiezaEnemigaMasFuerteHacia(t : Tablero, pos : Posicion, d : Direccion) -> bool:
-    posicion_enemiga : Posicion = posicion_vecina_hacia(pos, d) #hayFiguraDeColor se fija si es una pos valida
-    color_enemigo : Color = oponente(casilla_en_posicion(t, pos).color)
-    figura_propia : Figura = casilla_en_posicion(t, pos).figura
-
-    i : int = 0
-    while i < len(FIGURAS):
+    while i < len(FIGURAS) and not res:
         figura_enemiga : Figura = FIGURAS[i]
 
         hay_enemiga : bool = hayFiguraDeColor(t, posicion_enemiga, figura_enemiga, color_enemigo)
         es_mas_fuerte : bool = esMasFuerte(figura_propia, figura_enemiga)
+        res = hay_enemiga and es_mas_fuerte
+        i += 1
+
+    
+    return res
+
+
+def hay_pieza_enemiga_mas_debil_hacia(t : Tablero, pos : Posicion, d : Direccion) -> bool:
+    """Determina si existe una pieza enemiga de menor jerarquía/fuerza en la dirección d desde pos.
+
+    PRE:
+        tablero_bien_formado(t)
+        posicion_en_tablero(pos)
+        hayPieza(t, pos)
+
+    Args:
+        t (Tablero): El estado del tablero.
+        pos (Posicion): La posición de la pieza a verificar.
+        d (Direccion): La dirección a consultar.
+
+    Returns:
+        bool: True si la casilla vecina en dirección d tiene una pieza enemiga más débil, y False en caso contrario.
+    """
+    res : bool = hayPiezaEnemigaMasDebilHacia(t, pos, d)
+    return res
+
+def hayPiezaEnemigaMasFuerteHacia(t : Tablero, pos : Posicion, d : Direccion) -> bool:
+    """Indica si en la dirección d desde pos hay una pieza del oponente con estrictamente mayor fuerza que la propia.
+
+    PRE:
+        tablero_bien_formado(t)
+        posicion_en_tablero(pos)
+        hayPieza(t, pos)
+
+    Args:
+        t (Tablero): El estado del tablero.
+        pos (Posicion): La posición de la pieza propia.
+        d (Direccion): La dirección hacia la cual evaluar.
+
+    Returns:
+        bool: True si en la dirección d existe una pieza enemiga más fuerte, y False en caso contrario.
+    """
+    posicion_enemiga : Posicion = posicion_vecina_hacia(pos, d) #hayFiguraDeColor se fija si es una pos valida
+    color_enemigo : Color = oponente(casilla_en_posicion(t, pos).color)
+    figura_propia : Figura = casilla_en_posicion(t, pos).figura
+
+    i : int = 0
+    res : bool = False
+    while i < len(FIGURAS) and not res:
+        figura_enemiga : Figura = FIGURAS[i]
+
+        hay_enemiga : bool = hayFiguraDeColor(t, posicion_enemiga, figura_enemiga, color_enemigo)
+        es_mas_fuerte : bool = esMasFuerte(figura_enemiga, figura_propia)
+        res = hay_enemiga and es_mas_fuerte
 
         i += 1
 
-    res : bool = hay_enemiga and es_mas_fuerte
     return res
 
 def hayPiezaEnemigaMasFuerteVecina(t : Tablero, pos : Posicion):
+    """Verifica si la pieza en pos se encuentra adyacente a al menos una pieza del oponente estrictamente más fuerte.
+
+    PRE:
+        tablero_bien_formado(t)
+        posicion_en_tablero(pos)
+        hayPieza(t, pos)
+
+    Args:
+        t (Tablero): El estado del tablero.
+        pos (Posicion): La posición de la pieza a consultar.
+
+    Returns:
+        bool: True si existe alguna pieza enemiga más fuerte en las casillas vecinas, y False en caso contrario.
+    """
     i : int = 0
     res : bool = False
     while i < len(DIRECCIONES) and not res:
         d : Direccion = DIRECCIONES[i]
         res = hayPiezaEnemigaMasFuerteHacia(t, pos, d)
+        i+=1
     return res
 
 def hay_pieza_enemiga_mas_fuerte_vecina(t : Tablero, pos : Posicion) -> bool:
+    """Determina si la pieza en pos tiene alguna pieza enemiga de mayor fuerza en sus posiciones contiguas.
+
+    PRE:
+        tablero_bien_formado(t)
+        posicion_en_tablero(pos)
+        hayPieza(t, pos)
+
+    Args:
+        t (Tablero): El estado del tablero.
+        pos (Posicion): La posición de la pieza a consultar.
+
+    Returns:
+        bool: True si hay al menos una pieza enemiga más fuerte vecina, y False en caso contrario.
+    """
     res : bool = hayPiezaEnemigaMasFuerteVecina(t, pos)
     return res
 
 def hay_pieza_congelada(t : Tablero, pos : Posicion) -> bool:
+    """Determina si la pieza en la posición pos está congelada (tiene una pieza enemiga más fuerte vecina y ninguna amiga vecina).
+
+    PRE:
+        tablero_bien_formado(t)
+        posicion_en_tablero(pos)
+
+    Args:
+        t (Tablero): El estado del tablero.
+        pos (Posicion): La posición a consultar.
+
+    Returns:
+        bool: True si hay una pieza en pos y está congelada, y False en caso contrario.
+    """
     res : bool = hayPieza(t, pos) and hayPiezaEnemigaMasFuerteVecina(t, pos) and (not hayPiezaAmigaVecina(t, pos))
     return res
 
