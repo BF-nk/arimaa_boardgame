@@ -227,6 +227,18 @@ class test_posicion_vecina_hacia(unittest.TestCase):
 
     def test_vecina_al_norte(self):
         self.assertEqual(posicion_vecina_hacia(Posicion(0, 0), NORTE), Posicion(1, 0))
+    def test_vecina_al_sur(self):
+            self.assertEqual(posicion_vecina_hacia(Posicion(0, 0), SUR), Posicion(-1, 0))
+    def test_vecina_al_este(self):
+            self.assertEqual(posicion_vecina_hacia(Posicion(0, 0), ESTE), Posicion(0, 1))
+    def test_vecina_al_oeste(self):
+            self.assertEqual(posicion_vecina_hacia(Posicion(0, 0), OESTE), Posicion(0, -1))
+            
+    def test_vecina_desde_posicion_no_nula(self):
+    # Probar desde coordenadas positivas arbitrarias
+        self.assertEqual(posicion_vecina_hacia(Posicion(5, 10), NORTE), Posicion(6, 10))
+    # Probar desde coordenadas negativas
+        self.assertEqual(posicion_vecina_hacia(Posicion(-3, -4), OESTE), Posicion(-3, -5))
 
 class test_son_posiciones_vecinas(unittest.TestCase):
 
