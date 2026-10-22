@@ -282,10 +282,69 @@ def direccion_de_movimiento_habilitada(t: Tablero, pos: Posicion, d:Direccion) -
     direccion_permitida: bool = es_una_direccion_valida (pieza.figura, pieza.color, d)
     casilla_libre: bool = posicion_en_tablero(pos_vecina) and hay_casilla_vacia(t,pos_vecina)
     return direccion_permitida and casilla_libre
-    
-    
+
+##AUX3 realizar accion (verificamos primero que pueda efectivamente realizar alguno de esos movimientos con las siguentes auxiliares:)
+def puede_mover_a_secas(t:Tablero, pos: Posicion, d: Direccion) -> bool:
+    res: bool = hayCasillaVaciaHacia(t ,pos, d)
+    return res
+##Hago la funcion opuesta, que devuelve la direccion opuesta a la dada)
+def opuesta(d: Direccion) -> Direccion:
+    res: Direccion = NORTE
+    if d == NORTE:
+        res = SUR
+    elif d == SUR:
+        res = NORTE
+    elif d == ESTE:
+        res = OESTE
+    elif d == OESTE:
+        res = ESTE
+    return res
+def puede_arrastrar(t:Tablero, pos: Posicion, d :Direccion, d_arrastre: Direccion) -> bool:
+    res:bool = hayCasillaVaciaHacia(t, pos, d) and hay_pieza_enemiga_mas_debil_hacia(t, pos, opuesta(d_arrastre)) 
+    return res
+def puede_empujar(t:Tablero, pos: Posicion, d: Direccion, d_empuje: Direccion) -> bool:
+    pos_enemiga: Posicion = posicion_vecina_hacia(pos, d)
+    res: bool = posicion_en_tablero(pos_enemiga) and hayCasillaVaciaHacia(t, pos_enemiga, d_empuje) and hay_pieza_enemiga_mas_debil_hacia(t, pos, d)
+    return res 
+
+def puede_realizar_accion(t: Tablero, m: Movimiento) -> bool:
+    """Indica si la acción que se indica en Movimiento m puede realizarse en el tablero t.
+    PRE: 
+        tablero_bien_formado(t)
+        movimiento_bien_formado(m)
+        posicion_en_tablero(m.origen)
+    ARGS:
+        t (Tablero): El tablero de juego.
+        m (Movimiento): El movimiento o accion que se desea verificar. 
+    Returns:
+        bool: True si la accion puede realizarse, False en caso contrario.
+    """
+    res: bool = False 
+    if m.accion == MOVER_A_SECAS:
+        res = puede_mover_a_secas(t, m.origen, m.pasos[0]) 
+    elif m.accion == ARRASTRAR:
+        res = puede_arrastrar(t, m.origen, m.pasos[0], m.pasos[1])
+    else:
+        res = puede_empujar(t, m.origen, m.pasos[0], m.pasos[1])
+    return res 
+
 def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
-    pasos_suficientes: bool = (j.pasos_consumidos + len(m.pasos)) <= MAX_PASOS
+    """Indica si el movimiento m puede realizarse en el juego j.
+    PRE:
+        juego_bien_formado(j)
+        movimiento_bien_formado(m)
+        posicion_en_tablero(m.origen)
+    ARGS:
+        j (Juego): El juego en el que se desea realizar el movimiento( donde el juego incluye el tablero, turno y pasos consumidos).
+        m (Movimiento): El movimiento que se pretende o quiere realizar. 
+    Returns:
+        bool: True si el movimiento puede realizarse, False en caso contrario.
+    """
+    pasos_por_turno: bool = (j.pasos_consumidos + len(m.pasos)) <= MAX_PASOS
+    no_pieza_congelada: bool = not hay_pieza_congelada(j.tablero, m.origen)
+    res: bool = (hay_pieza_de_color(j.tablero, m.origen, j.turno) and no_pieza_congelada and direccion_de_movimiento_habilitada(j.tablero, m.origen, m.pasos[0]) and pasos_por_turno and puede_realizar_accion(j.tablero, m))
+    return res 
+
 
 
     
