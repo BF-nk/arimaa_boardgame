@@ -78,6 +78,32 @@ def tablero_8x8_inicial_ejemplo():
               #01234567
             ])
 
+def tablero_8x8_mezclado():
+    return leer_tablero([
+                '--r---rr', #7
+                '-mrh----', #6
+                '-r---r--', #5
+                'd-EH---c', #4
+                '-M--hD-d', #3
+                '-R-e----', #2
+                '---H-R-C', #1
+                'R-R--R-R', #0
+                #01234567
+                ])
+
+def tablero_8x8_vecinos():
+    return leer_tablero([
+              'R-hRD-Rr', #7
+              'M----d--', #6
+              '-h-rrCR-', #5
+              'R-rcE---', #4
+              '--drRR--', #3
+              '-HD-H--m', #2
+              '--r-RCc-', #1
+              're---r--', #0
+              #01234567
+            ])
+
 #### Ejercicio 1
 
 class test_tablero_bien_formado(unittest.TestCase):
@@ -306,39 +332,73 @@ class test_hay_pieza_de_color(unittest.TestCase):
         t = tablero_8x8_inicial_ejemplo()
         self.assertTrue(hay_pieza_de_color(t, Posicion(1, 4), DORADO))
 
+    def test_hay_pieza_de_color_ok__en_esquinas(self):
+        t = tablero_8x8_inicial_ejemplo()
+
+        #SUROESTE
+        self.assertTrue(hay_pieza_de_color(t, Posicion(0, 0), DORADO))
+        #SURESTE
+        self.assertTrue(hay_pieza_de_color(t, Posicion(0, 7), DORADO))
+        #NOROESTE
+        self.assertTrue(hay_pieza_de_color(t, Posicion(7, 0), PLATEADO))
+        #NORESTE
+        self.assertTrue(hay_pieza_de_color(t, Posicion(7, 7), PLATEADO))
+
+    def test_no_hay_pieza_de_color(self):
+        t = tablero_8x8_inicial_ejemplo()
+        self.assertFalse(hay_pieza_de_color(t, Posicion(3, 4), PLATEADO))
+        self.assertFalse(hay_pieza_de_color(t, Posicion(2, 5), DORADO))
+
+    def test_hay_pieza_de_color_opuesto(self):
+        t = tablero_8x8_inicial_ejemplo()
+        self.assertFalse(hay_pieza_de_color(t, Posicion(1, 2), PLATEADO))
+        self.assertFalse(hay_pieza_de_color(t, Posicion(7, 5), DORADO))
+
 #### Ejercicio 3
 
 class test_hay_casilla_vacia_hacia(unittest.TestCase):
 
-    def test_hay_casilla_vacia_hacia(self):
-        t = leer_tablero([
-              '-r----rr', #7
-              '-mrh----', #6
-              '-r---r--', #5
-              'd-EH---c', #4
-              '-M--hD-d', #3
-              '-R-e----', #2
-              '---H-R-C', #1
-              'R-R---RR', #0
-              #01234567
-            ])
+    def test_hay_casilla_vacia_hacia_desde_esquinas(self):
+        t = tablero_8x8_mezclado()
+
+        #SUROESTE
         self.assertTrue(hay_casilla_vacia_hacia(t, Posicion(0, 0), NORTE))
 
+        #SURESTE
+        self.assertTrue(hay_casilla_vacia_hacia(t, Posicion(0, 7), OESTE))
+
+        #NORESTE
+        self.assertTrue(hay_casilla_vacia_hacia(t, Posicion(7, 7), SUR))
+
+        #NOROESTE
+        self.assertTrue(hay_casilla_vacia_hacia(t, Posicion(7, 0), ESTE))
+
+    def test_no_hay_casilla_vacia_hacia_desde_arbitrario(self):
+        t = tablero_8x8_mezclado()
+        self.assertFalse(hay_casilla_vacia_hacia(t, Posicion(1, 3), NORTE))
+
+    def test_hay_casilla_vacia_hacia_desde_arbitrario(self):
+        t = tablero_8x8_mezclado()
+        self.assertTrue(hay_casilla_vacia_hacia(t, Posicion(4, 3), ESTE))
+
+        
 class test_hay_pieza_amiga_vecina(unittest.TestCase):
 
     def test_hay_pieza_amiga_vecina(self):
-        t = leer_tablero([
-              'R-hRD-Rr', #7
-              'M----d--', #6
-              '-h-rrCR-', #5
-              'R-rcE---', #4
-              '--drRR--', #3
-              '-HD-H--m', #2
-              '--r-RCc-', #1
-              're---r--', #0
-              #01234567
-            ])
+        t = tablero_8x8_vecinos()
+
+        #PLATEADO
         self.assertTrue(hay_pieza_amiga_vecina(t, Posicion(4, 3)))
+        #DORADO
+        self.assertTrue(hay_pieza_amiga_vecina(t, Posicion(3, 4)))
+
+    def test_no_hay_pieza_amiga_vecina(self):
+        t = tablero_8x8_vecinos()
+        #PLATEADO
+        self.assertFalse(hay_pieza_amiga_vecina(t, Posicion(1, 2)))
+        #DORADO
+        self.assertFalse(hay_pieza_amiga_vecina(t, Posicion(7, 6)))
+
 
 class test_hay_pieza_enemiga_mas_debil_hacia(unittest.TestCase):
 
