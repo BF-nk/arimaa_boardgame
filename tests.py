@@ -233,7 +233,7 @@ class test_posicion_vecina_hacia(unittest.TestCase):
             self.assertEqual(posicion_vecina_hacia(Posicion(0, 0), ESTE), Posicion(0, 1))
     def test_vecina_al_oeste(self):
             self.assertEqual(posicion_vecina_hacia(Posicion(0, 0), OESTE), Posicion(0, -1))
-            
+
     def test_vecina_desde_posicion_no_nula(self):
     # Probar desde coordenadas positivas arbitrarias
         self.assertEqual(posicion_vecina_hacia(Posicion(5, 10), NORTE), Posicion(6, 10))
@@ -244,6 +244,22 @@ class test_son_posiciones_vecinas(unittest.TestCase):
 
     def test_vecinas(self):
         self.assertTrue(son_posiciones_vecinas(Posicion(0, 0), Posicion(1, 0)))
+
+    def test_no_vecinas(self):
+            # No son vecinas en fila
+            self.assertFalse(son_posiciones_vecinas(Posicion(4, 0), Posicion(1, 0)))
+            # No son vecinas en columna
+            self.assertFalse(son_posiciones_vecinas(Posicion(0, 5), Posicion(0, 1)))
+            # No son vecinas ni en fila ni en columna
+            self.assertFalse(son_posiciones_vecinas(Posicion(2, 5), Posicion(3, 1)))
+            # Negativas
+            self.assertFalse(son_posiciones_vecinas(Posicion(-2, -5), Posicion(-3, -1)))
+
+    def test_vecinas_negativas(self):
+        #En fila
+        self.assertTrue(son_posiciones_vecinas(Posicion(-1,0),Posicion(-2,0)))
+        #En columna
+        self.assertTrue(son_posiciones_vecinas(Posicion(0, -2), Posicion(0, -3)))
 
 class test_casilla_en_posicion(unittest.TestCase):
 
