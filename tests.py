@@ -25,6 +25,9 @@ def tablero_8x8_vacio():
               #01234567
             ])
 
+def tablero_lista_vacia():
+    return leer_tablero([])
+
 def tablero_7x8_incompleto():
     return leer_tablero([
               '-------', #7
@@ -82,6 +85,10 @@ class test_tablero_bien_formado(unittest.TestCase):
     def test_8x8_lleno(self):
         t = tablero_8x8_inicial_ejemplo()
         self.assertTrue(tablero_bien_formado(t))
+
+    def test_tablero_lista_vacia(self):
+        t = tablero_lista_vacia()
+        self.assertFalse(tablero_bien_formado(t))
 
     def test_8x8_vacio(self):
         t = tablero_8x8_vacio()
