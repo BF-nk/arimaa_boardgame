@@ -498,6 +498,7 @@ def hayPiezaEnemigaMasFuerteVecina(t : Tablero, pos : Posicion):
     while i < len(DIRECCIONES) and not res:
         d : Direccion = DIRECCIONES[i]
         res = hayPiezaEnemigaMasFuerteHacia(t, pos, d)
+        i+=1
     return res
 
 def hay_pieza_enemiga_mas_fuerte_vecina(t : Tablero, pos : Posicion) -> bool:
