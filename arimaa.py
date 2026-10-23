@@ -584,7 +584,7 @@ def puedeRealizarAccion(t: Tablero, m: Movimiento) -> bool:
     """
     es_mover_a_secas : bool = m.accion == MOVER_A_SECAS
     es_arrastrar : bool = m.accion == ARRASTRAR
-    
+
     res: bool = False 
     if es_mover_a_secas:
         res = puedeMoverASecas(t, m.origen, m.pasos[0]) 
@@ -593,6 +593,17 @@ def puedeRealizarAccion(t: Tablero, m: Movimiento) -> bool:
     else:
         res = puedeEmpujar(t, m.origen, m.pasos[0], m.pasos[1])
     return res 
+
+def puedeRealizarMovimiento(j : Juego, m : Movimiento):
+    t : Tablero = j.tablero
+    pos : Posicion = m.origen
+    col : Color = j.turno
+    d : Direccion = m.pasos[0]
+    pasos_consumidos : int = j.pasos_consumidos
+    quedan_pasos : bool = pasos_consumidos <= MAX_PASOS
+
+    res : bool = hayPiezaDeColor(t, pos, col) and (not hay_pieza_congelada(t, pos)) and direccionDeMovimientoHabilitada(t, pos, d) and quedan_pasos and puedeRealizarAccion(t, m)
+    return res
 
 def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
     """Indica si el movimiento m puede realizarse en el juego j.
@@ -606,9 +617,7 @@ def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
     Returns:
         bool: True si el movimiento puede realizarse, False en caso contrario.
     """
-    pasos_por_turno: bool = (j.pasos_consumidos + len(m.pasos)) <= MAX_PASOS
-    no_pieza_congelada: bool = not hay_pieza_congelada(j.tablero, m.origen)
-    res: bool = (hay_pieza_de_color(j.tablero, m.origen, j.turno) and no_pieza_congelada and direccionDeMovimientoHabilitada(j.tablero, m.origen, m.pasos[0]) and pasos_por_turno and puede_realizar_accion(j.tablero, m))
+    res: bool = puedeRealizarMovimiento(j, m)
     return res 
 
 
