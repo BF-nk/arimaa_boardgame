@@ -440,35 +440,75 @@ class test_hay_pieza_enemiga_mas_debil_hacia(unittest.TestCase):
 
 class test_hay_pieza_enemiga_mas_fuerte_vecina(unittest.TestCase):
 
-    def test_hay_pieza_enemiga_mas_fuerte_vecina(self):
-        t = leer_tablero([
-              'R-e--mRr', #7
-              '------dE', #6
-              'h--Rr-RR', #5
-              'c--R-C--', #4
-              '-rCHDrr-', #3
-              '----rc--', #2
-              'h-R-M-R-', #1
-              'rr-D-dH-', #0
-              #01234567
-            ])
-        self.assertTrue(hay_pieza_enemiga_mas_fuerte_vecina(t, Posicion(3, 1)))
+    def setUp(self):
+        # Tablero de prueba compartido
+        self.t = leer_tablero([
+            'R-e--mRr', #7
+            '------dE', #6
+            'h--Rr-RR', #5
+            'c--R-C--', #4
+            '-rCHDrr-', #3
+            '----rc--', #2
+            'h-R-M-R-', #1
+            'rr-D-dH-', #0
+            #01234567
+        ])
+
+    def test_hay_pieza_enemiga_mas_fuerte_vecina__dorada_y_plateada(self):
+        # Pieza dorada 'r' (conejo) en (3,1) tiene al lado 'C' (gato dorado) que es más fuerte
+        self.assertTrue(hay_pieza_enemiga_mas_fuerte_vecina(self.t, Posicion(3, 1)))
+
+        # Pieza plateada 'd' (perro plateado) en (6,6) tiene al lado 'E' (elefante dorado) en (6,7)
+        self.assertTrue(hay_pieza_enemiga_mas_fuerte_vecina(self.t, Posicion(6, 6)))
+
+    def test_no_hay_pieza_enemiga_mas_fuerte_vecina__es_mas_fuerte(self):
+        # 'E' (elefante dorado) en (6,7) es la pieza más fuerte, no tiene nada más fuerte alrededor
+        self.assertFalse(hay_pieza_enemiga_mas_fuerte_vecina(self.t, Posicion(6, 7)))
+
+    def test_no_hay_pieza_enemiga_mas_fuerte_vecina__misma_fuerza(self):
+        # 'r' (conejo plateado) en (0,1) tiene al lado 'r' (conejo plateado) en (0,0) -> igual fuerza
+        self.assertFalse(hay_pieza_enemiga_mas_fuerte_vecina(self.t, Posicion(0, 1)))
+
+    def test_no_hay_pieza_enemiga_mas_fuerte_vecina__pieza_amiga_mas_fuerte(self):
+        # 'R' (conejo dorado) en (3,2) tiene al lado 'H' (caballo dorado) en (3,3) -> es más fuerte pero amiga
+        self.assertFalse(hay_pieza_enemiga_mas_fuerte_vecina(self.t, Posicion(3, 2)))
+
+    def test_no_hay_pieza_enemiga_mas_fuerte_vecina__rodeado_de_vacias(self):
+        # 'm' (camello plateado) en (7,5) solo tiene casillas vacías a su alrededor en la fila 6
+        self.assertFalse(hay_pieza_enemiga_mas_fuerte_vecina(self.t, Posicion(7, 5)))
 
 class test_hay_pieza_congelada(unittest.TestCase):
 
-    def test_hay_pieza_congelada(self):
-        t = leer_tablero([
-              '--d--H-D', #7
-              '-hMc--r-', #6
-              '--r--C-H', #5
-              '--------', #4
-              '-CeD----', #3
-              '---R----', #2
-              '--------', #1
-              '--------', #0
-              #01234567
-            ])
-        self.assertTrue(hay_pieza_congelada(t, Posicion(6, 1)))
+    def setUp(self):
+        self.t = leer_tablero([
+            '--d--H-D', #7
+            '-hMc--r-', #6
+            '--r--C-H', #5
+            '--------', #4
+            '-CeD----', #3
+            '---R----', #2
+            '--------', #1
+            '--------', #0
+            #01234567
+        ])
+
+    def test_hay_pieza_congelada__casos_positivos(self):
+        # 'h' (caballo plateado) en (6, 1) tiene a 'M' (camello dorado) en (6, 2) al lado y no tiene amigas adyacentes -> CONGELADO
+        self.assertTrue(hay_pieza_congelada(self.t, Posicion(6, 1)))
+
+        # 'C' (gato dorado) en (3, 1) tiene a 'e' (elefante plateado) en (3, 2) al lado y no tiene amigas adyacentes -> CONGELADO
+        self.assertTrue(hay_pieza_congelada(self.t, Posicion(3, 1)))
+
+    def test_no_hay_pieza_congelada_con_vecinos_enemigos_mas_debiles(self):
+        # 'e' (elefante plateado) en (3, 2) es la pieza más fuerte, nadie la puede congelar -> FALSO
+        self.assertFalse(hay_pieza_congelada(self.t, Posicion(3, 2)))
+    def test_no_hay_pieza_congelada_con_vacias_alrededor(self):
+        # 'R' (conejo dorado) en (2, 3) solo tiene casillas vacías alrededor -> FALSO
+        self.assertFalse(hay_pieza_congelada(self.t, Posicion(2, 3)))
+
+    def test_no_hay_pieza_congelada__casilla_vacia(self):
+        # En una casilla vacía como (4, 4) no hay pieza congelada -> FALSO
+        self.assertFalse(hay_pieza_congelada(self.t, Posicion(4, 4)))
 
 #### Ejercicio 4
 
