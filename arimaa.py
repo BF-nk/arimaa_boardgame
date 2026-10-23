@@ -622,8 +622,85 @@ def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
 
 #### Ejercicio 5
 
-def activar_trampas(t : Tablero) -> Tablero:
-    raise Exception("No implementado")
+def copiar_tablero(t: Tablero) -> Tablero:
+    """
+    Devuelve una copia del tablero *t*, con las mismas casillas en las mismas posiciones.
+    Modificar la copia no modifica *t*.
+
+    PRE: True
+
+    Args:
+        t (Tablero): El tablero a copiar.
+
+    Returns:
+        Un tablero nuevo con el mismo contenido que *t*.
+    """
+    tablero_nuevo: Tablero = []
+    for i in range(len(t)):
+        fila_nueva: list[Casilla] = []
+        for j in range(len(t[i])):
+            fila_nueva.append(t[i][j])
+        tablero_nuevo.append(fila_nueva)
+    return tablero_nuevo
+
+
+def tablero_sacando_pieza(t: Tablero, pos: Posicion) -> Tablero:
+    """
+    Devuelve un tablero igual a *t*, salvo que la casilla en la posición *pos* queda vacía.
+
+    PRE: *t* es un tablero bien formado y *pos* es una posición dentro del tablero.
+
+    Args:
+        t (Tablero): El tablero original.
+        pos (Posicion): La posición de la casilla que se vacía.
+
+    Returns:
+        Un tablero nuevo igual a *t* con la casilla en *pos* vacía.
+    """
+    tablero_nuevo: Tablero = copiar_tablero(t)
+    tablero_nuevo[pos.fila][pos.columna] = VACIA
+    return tablero_nuevo
+    
+
+def tablero_despues_de_activar_trampa(t: Tablero, pos: Posicion) -> Tablero:
+    """
+    Devuelve el tablero que resulta de activar la trampa ubicada en *pos* sobre *t*.
+    Si en *pos* hay una pieza sin piezas vecinas de su mismo color, se retira del tablero.
+    En cualquier otro caso, el tablero queda igual.
+
+    PRE: *t* es un tablero bien formado y *pos* es una posición dentro del tablero.
+
+    Args:
+        t (Tablero): El tablero sobre el que se activa la trampa.
+        pos (Posicion): La posición de la casilla trampa.
+
+    Returns:
+        Un tablero nuevo con la trampa en *pos* activada.
+    """
+    tablero_nuevo: Tablero = copiar_tablero(t)
+    if not hay_casilla_vacia(t, pos) and not hay_pieza_amiga_vecina(t, pos):
+        tablero_nuevo = tablero_sacando_pieza(t, pos)
+    return tablero_nuevo
+
+
+def activar_trampas(t: Tablero) -> Tablero:
+    """
+    Devuelve el tablero que resulta de activar, en orden, las cuatro casillas trampa sobre *t*.
+    Cada pieza que esté en una casilla trampa sin piezas vecinas de su mismo color se retira del tablero.
+
+    PRE: *t* es un tablero bien formado.
+
+    Args:
+        t (Tablero): El tablero sobre el que se activan las trampas.
+
+    Returns:
+        Un tablero nuevo, bien formado, con todas las trampas activadas.
+    """
+    tablero_nuevo: Tablero = copiar_tablero(t)
+    for posicion_trampa in POSICIONES_TRAMPA:
+        tablero_nuevo = tablero_despues_de_activar_trampa(tablero_nuevo, posicion_trampa)
+    return tablero_nuevo
+
 
 #### Ejercicio 6
 
