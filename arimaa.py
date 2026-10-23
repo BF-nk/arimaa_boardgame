@@ -562,17 +562,7 @@ def puede_mover_a_secas(t:Tablero, pos: Posicion, d: Direccion) -> bool:
     res: bool = hayCasillaVaciaHacia(t ,pos, d)
     return res
 ##Hago la funcion opuesta, que devuelve la direccion opuesta a la dada)
-def opuesta(d: Direccion) -> Direccion:
-    res: Direccion = NORTE
-    if d == NORTE:
-        res = SUR
-    elif d == SUR:
-        res = NORTE
-    elif d == ESTE:
-        res = OESTE
-    elif d == OESTE:
-        res = ESTE
-    return res
+
 def puede_arrastrar(t:Tablero, pos: Posicion, d :Direccion, d_arrastre: Direccion) -> bool:
     res:bool = hayCasillaVaciaHacia(t, pos, d) and hay_pieza_enemiga_mas_debil_hacia(t, pos, opuesta(d_arrastre)) 
     return res
