@@ -570,7 +570,7 @@ def puedeEmpujar(t:Tablero, pos: Posicion, d: Direccion, d_empuje: Direccion) ->
     res: bool = hayPiezaEnemigaMasDebilHacia(t, pos, d) and hayCasillaVaciaHacia(t, pos_enemiga, d_empuje)
     return res 
 
-def puede_realizar_accion(t: Tablero, m: Movimiento) -> bool:
+def puedeRealizarAccion(t: Tablero, m: Movimiento) -> bool:
     """Indica si la acción que se indica en Movimiento m puede realizarse en el tablero t.
     PRE: 
         tablero_bien_formado(t)
@@ -582,10 +582,13 @@ def puede_realizar_accion(t: Tablero, m: Movimiento) -> bool:
     Returns:
         bool: True si la accion puede realizarse, False en caso contrario.
     """
+    es_mover_a_secas : bool = m.accion == MOVER_A_SECAS
+    es_arrastrar : bool = m.accion == ARRASTRAR
+    
     res: bool = False 
-    if m.accion == MOVER_A_SECAS:
+    if es_mover_a_secas:
         res = puedeMoverASecas(t, m.origen, m.pasos[0]) 
-    elif m.accion == ARRASTRAR:
+    elif es_arrastrar:
         res = puedeArrastrar(t, m.origen, m.pasos[0], m.pasos[1])
     else:
         res = puedeEmpujar(t, m.origen, m.pasos[0], m.pasos[1])
