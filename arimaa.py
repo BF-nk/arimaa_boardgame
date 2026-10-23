@@ -620,10 +620,6 @@ def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
     res: bool = puedeRealizarMovimiento(j, m)
     return res 
 
-
-
-    
-
 #### Ejercicio 5
 
 def activar_trampas(t : Tablero) -> Tablero:
