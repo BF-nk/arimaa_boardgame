@@ -539,23 +539,21 @@ def hay_pieza_congelada(t : Tablero, pos : Posicion) -> bool:
 
 #### Ejercicio 4
 ##AUX 1 (veo si la direccion es valida)
-def es_una_direccion_valida(f:Figura, c: Color, d: Direccion) -> bool:
-    res:bool = True
-    if f == CONEJO:
-        if (c== DORADO) and (d== SUR):
-            res= False
-        elif (c== PLATEADO) and (d==NORTE):
-            res = False
-    return res 
-    ##AUX2 (una veo si esa posicion es efectivamente valida y a su vez chequeo que el espacio vecino
-    ##       a cual se traslada esta libre)
-         
-def direccion_de_movimiento_habilitada(t: Tablero, pos: Posicion, d:Direccion) -> bool:
-    pieza: Casilla = casilla_en_posicion(t,pos)
-    pos_vecina : Posicion = posicion_vecina_hacia(pos,d)
-    direccion_permitida: bool = es_una_direccion_valida (pieza.figura, pieza.color, d)
-    casilla_libre: bool = posicion_en_tablero(pos_vecina) and hay_casilla_vacia(t,pos_vecina)
-    return direccion_permitida and casilla_libre
+
+def esDireccionHabilitadaParaFiguraDeColor(f : Figura, col : Color, d : Direccion):
+    res : bool = True
+    if f == CONEJO and col == DORADO and d == SUR:
+        res = False
+    elif f == CONEJO and col == PLATEADO and d == NORTE:
+        res = False
+    return res
+
+def direccionDeMovimientoHabilitada(t : Tablero, pos : Posicion, d : Direccion):
+    casillero : Casilla = casilla_en_posicion(t, pos)
+    f : Figura = casillero.figura
+    col : Color = casillero.color
+    res : bool = hayFiguraDeColor(t, pos, f, col) and esDireccionHabilitadaParaFiguraDeColor(f, col, d)
+    return res
 
 ##AUX3 realizar accion (verificamos primero que pueda efectivamente realizar alguno de esos movimientos con las siguentes auxiliares:)
 def puede_mover_a_secas(t:Tablero, pos: Posicion, d: Direccion) -> bool:
@@ -606,7 +604,7 @@ def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
     """
     pasos_por_turno: bool = (j.pasos_consumidos + len(m.pasos)) <= MAX_PASOS
     no_pieza_congelada: bool = not hay_pieza_congelada(j.tablero, m.origen)
-    res: bool = (hay_pieza_de_color(j.tablero, m.origen, j.turno) and no_pieza_congelada and direccion_de_movimiento_habilitada(j.tablero, m.origen, m.pasos[0]) and pasos_por_turno and puede_realizar_accion(j.tablero, m))
+    res: bool = (hay_pieza_de_color(j.tablero, m.origen, j.turno) and no_pieza_congelada and direccionDeMovimientoHabilitada(j.tablero, m.origen, m.pasos[0]) and pasos_por_turno and puede_realizar_accion(j.tablero, m))
     return res 
 
 
