@@ -567,7 +567,7 @@ def puedeArrastrar(t:Tablero, pos: Posicion, d :Direccion, d_arrastre: Direccion
 
 def puedeEmpujar(t:Tablero, pos: Posicion, d: Direccion, d_empuje: Direccion) -> bool:
     pos_enemiga: Posicion = posicion_vecina_hacia(pos, d)
-    res: bool = hayPiezaEnemigaMasDebilHacia(t, pos, d) and esPosicionVecinaHacia(pos, d, pos_enemiga) and hayCasillaVaciaHacia(t, pos_enemiga, d_empuje) and hay_pieza_enemiga_mas_debil_hacia(t, pos, d)
+    res: bool = hayPiezaEnemigaMasDebilHacia(t, pos, d) and hayCasillaVaciaHacia(t, pos_enemiga, d_empuje)
     return res 
 
 def puede_realizar_accion(t: Tablero, m: Movimiento) -> bool:
