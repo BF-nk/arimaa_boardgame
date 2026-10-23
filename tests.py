@@ -103,6 +103,18 @@ def tablero_8x8_vecinos():
               're---r--', #0
               #01234567
             ])
+def tablero_8x8_vecinos_debiles():
+    return leer_tablero([
+              '--Hdm---', #7
+              'r--HhC--', #6
+              'e---R-C-', #5
+              'ME--d---', #4
+              'h--RDcRr', #3
+              'R-R-r--r', #2
+              '-RRcrRD-', #1
+              '--r---rr', #0
+              #01234567
+            ])
 
 #### Ejercicio 1
 
@@ -403,18 +415,28 @@ class test_hay_pieza_amiga_vecina(unittest.TestCase):
 class test_hay_pieza_enemiga_mas_debil_hacia(unittest.TestCase):
 
     def test_hay_pieza_enemiga_mas_debil_hacia(self):
-        t = leer_tablero([
-              '--Hdm---', #7
-              'r--HhC--', #6
-              'e---R-C-', #5
-              'ME--d---', #4
-              'h--RDcRr', #3
-              'R-R-r--r', #2
-              '-RRcrRD-', #1
-              '--r---rr', #0
-              #01234567
-            ])
+        t = tablero_8x8_vecinos_debiles()
+        # HACIA PIEZA MÁS DÉBIL DORADA
         self.assertTrue(hay_pieza_enemiga_mas_debil_hacia(t, Posicion(1, 3), OESTE))
+        # HACIA PIEZA MÁS DÉBIL PLATEADA
+        self.assertTrue(hay_pieza_enemiga_mas_debil_hacia(t, Posicion(3, 4), ESTE))
+    
+    def test_no_hay_pieza_enemiga_mas_debil_hacia(self):
+        t = tablero_8x8_vecinos_debiles()
+        # HACIA PIEZA MÁS FUERTE DORADA
+        self.assertFalse(hay_pieza_enemiga_mas_debil_hacia(t, Posicion(7, 3), OESTE))
+        # HACIA PIEZA MÁS FUERTE PLATEADA
+        self.assertFalse(hay_pieza_enemiga_mas_debil_hacia(t, Posicion(4, 0), OESTE))
+        # CASILLA VACIA
+        self.assertFalse(hay_pieza_enemiga_mas_debil_hacia(t, Posicion(6, 5), ESTE))
+
+    def test_pieza_amiga_mas_debil_hacia(self):
+        t = tablero_8x8_vecinos_debiles()
+        self.assertFalse(hay_pieza_enemiga_mas_debil_hacia(t, Posicion(1, 4), OESTE))
+
+    def test_hacia_enemigo_con_misma_fuerza(self):
+        t = tablero_8x8_vecinos_debiles()
+        self.assertFalse(hay_pieza_enemiga_mas_debil_hacia(t, Posicion(6, 3), ESTE))
 
 class test_hay_pieza_enemiga_mas_fuerte_vecina(unittest.TestCase):
 
