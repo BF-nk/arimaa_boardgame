@@ -561,6 +561,167 @@ class test_activar_trampas(unittest.TestCase):
         self.assertNotEqual(t0, t1)
         self.assertEqual(t2, t1)
 
+
+    def test_tablero_vacio(self):
+        t0 = leer_tablero([
+               '--------', #7
+               '--------', #6
+               '--------', #5
+               '--------', #4
+               '--------', #3
+               '--------', #2
+               '--------', #1
+               '--------', #0
+               #01234567
+             ])
+        self.assertEqual(activar_trampas(t0), tablero_8x8_vacio())
+
+
+    def test_pieza_sola_se_va(self):
+        t0 = leer_tablero([
+               '--------', #7
+               '--------', #6
+               '--------', #5
+               '--------', #4
+               '--------', #3
+               '-----m--', #2
+               '--------', #1
+               '--------', #0
+               #01234567
+             ])
+        self.assertEqual(activar_trampas(t0), tablero_8x8_vacio())
+
+
+    def test_pieza_con_amiga_vecina_se_queda(self):
+        t0 = leer_tablero([
+               '--------', #7
+               '--------', #6
+               '--------', #5
+               '--------', #4
+               '--------', #3
+               '-----me-', #2
+               '--------', #1
+               '--------', #0
+               #01234567
+        ])
+        t1 = leer_tablero([
+               '--------', #7
+               '--------', #6
+               '--------', #5
+               '--------', #4
+               '--------', #3
+               '-----me-', #2
+               '--------', #1
+               '--------', #0
+               #01234567
+        ])
+        self.assertEqual(activar_trampas(t0), t1)
+
+
+    def test_pieza_con_amiga_diagonal_no_cuenta(self):
+        t0 = leer_tablero([
+               '--------', #7
+               '--------', #6
+               '--------', #5
+               '--------', #4
+               '----e---', #3
+               '-----m--', #2
+               '--------', #1
+               '--------', #0
+               #01234567
+        ])
+        t1 = leer_tablero([
+               '--------', #7
+               '--------', #6
+               '--------', #5
+               '--------', #4
+               '----e---', #3
+               '--------', #2
+               '--------', #1
+               '--------', #0
+               #01234567
+        ])
+        self.assertEqual(activar_trampas(t0), t1)
+
+
+    def test_pieza_con_enemiga_se_retira(self):
+        t0 = leer_tablero([
+               '--------', #7
+               '--------', #6
+               '--------', #5
+               '--------', #4
+               '--------', #3
+               '-----mE-', #2
+               '--------', #1
+               '--------', #0
+               #01234567
+        ])
+        t1 = leer_tablero([
+               '--------', #7
+               '--------', #6
+               '--------', #5
+               '--------', #4
+               '--------', #3
+               '------E-', #2
+               '--------', #1
+               '--------', #0
+               #01234567
+        ])
+        self.assertEqual(activar_trampas(t0), t1)
+
+
+    def test_cuatro_trampas_a_la_vez(self):
+        t0 = leer_tablero([
+               '--------', #7
+               '--------', #6
+               '--c-Rd--', #5
+               '--------', #4
+               '--------', #3
+               '--m--HE-', #2
+               '--r-----', #1
+               '--------', #0
+               #01234567
+        ])
+        t1 = leer_tablero([
+               '--------', #7
+               '--------', #6
+               '----R---', #5
+               '--------', #4
+               '--------', #3
+               '--m--HE-', #2
+               '--r-----', #1
+               '--------', #0
+               #01234567
+        ])
+        self.assertEqual(activar_trampas(t0), t1)
+
+
+    def test_funcion_no_modifica_el_tablero_original(self):
+        t0 = leer_tablero([
+               '--------', #7
+               '--------', #6
+               '--c-Rd--', #5
+               '--------', #4
+               '--------', #3
+               '--m--HE-', #2
+               '--r-----', #1
+               '--------', #0
+               #01234567
+        ])
+        t0_original = leer_tablero([
+               '--------', #7
+               '--------', #6
+               '--c-Rd--', #5
+               '--------', #4
+               '--------', #3
+               '--m--HE-', #2
+               '--r-----', #1
+               '--------', #0
+               #01234567
+        ])
+        activar_trampas(t0)
+        self.assertEqual(t0, t0_original)
+
 #### Ejercicio 6
 
 class test_realizar_movimiento(unittest.TestCase):
