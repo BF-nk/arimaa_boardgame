@@ -479,7 +479,7 @@ def hayPiezaEnemigaMasFuerteHacia(t : Tablero, pos : Posicion, d : Direccion) ->
 
     return res
 
-def hayPiezaEnemigaMasFuerteVecina(t : Tablero, pos : Posicion):
+def hayPiezaEnemigaMasFuerteVecina(t : Tablero, pos : Posicion) -> bool:
     """Verifica si la pieza en pos se encuentra adyacente a al menos una pieza del oponente estrictamente más fuerte.
 
     PRE:
@@ -540,7 +540,7 @@ def hay_pieza_congelada(t : Tablero, pos : Posicion) -> bool:
 #### Ejercicio 4
 ##AUX 1 (veo si la direccion es valida)
 
-def esDireccionHabilitadaParaFiguraDeColor(f : Figura, col : Color, d : Direccion):
+def esDireccionHabilitadaParaFiguraDeColor(f : Figura, col : Color, d : Direccion) -> bool:
     res : bool = True
     if f == CONEJO and col == DORADO and d == SUR:
         res = False
@@ -548,7 +548,7 @@ def esDireccionHabilitadaParaFiguraDeColor(f : Figura, col : Color, d : Direccio
         res = False
     return res
 
-def direccionDeMovimientoHabilitada(t : Tablero, pos : Posicion, d : Direccion):
+def direccionDeMovimientoHabilitada(t : Tablero, pos : Posicion, d : Direccion) -> bool:
     casillero : Casilla = casilla_en_posicion(t, pos)
     f : Figura = casillero.figura
     col : Color = casillero.color
@@ -594,7 +594,7 @@ def puedeRealizarAccion(t: Tablero, m: Movimiento) -> bool:
         res = puedeEmpujar(t, m.origen, m.pasos[0], m.pasos[1])
     return res 
 
-def puedeRealizarMovimiento(j : Juego, m : Movimiento):
+def puedeRealizarMovimiento(j : Juego, m : Movimiento) -> bool:
     t : Tablero = j.tablero
     pos : Posicion = m.origen
     col : Color = j.turno
@@ -622,47 +622,100 @@ def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
 
 #### Ejercicio 5
 
-def copiar_tablero(t: Tablero) -> Tablero:
-    """
-    Devuelve una copia del tablero *t*, con las mismas casillas en las mismas posiciones.
-    Modificar la copia no modifica *t*.
+def tablerosCoincidenEnLaPosicion(t1 : Tablero, t2 : Tablero, pos: Posicion) -> bool:
+    posicion_t1 : Casilla = t1[pos.fila][pos.columna]
+    posicion_t2 : Casilla = t2[pos.fila][pos.columna]
 
-    PRE: True
+    res : bool = posicion_t1 == posicion_t2
+    return res
 
+def tablerosCoincidenSalvoEnLaPosicion(t0: Tablero, t1 : Tablero, pos : Posicion) -> bool:
+    """Indica si dos tableros coinciden en todas sus posiciones salvo en la posición pos.
+    
+    PRE: 
+        tableroBienFormado(t0)
+        tableroBienFormado(t1)
+        posicionEnTablero(pos)
+    
     Args:
-        t (Tablero): El tablero a copiar.
-
+        t0 (Tablero): El primer tablero a comparar.
+        t1 (Tablero): El segundo tablero a comparar.
+        pos (Posicion): La posición del tablero a excluir de la comparación.
+        
     Returns:
-        Un tablero nuevo con el mismo contenido que *t*.
+        True si los tableros coinciden en todas las posiciones salvo en pos, y False en caso contrario.
     """
-    tablero_nuevo: Tablero = []
-    for i in range(len(t)):
-        fila_nueva: list[Casilla] = []
-        for j in range(len(t[i])):
-            fila_nueva.append(t[i][j])
-        tablero_nuevo.append(fila_nueva)
-    return tablero_nuevo
+    res: bool = True
+    fila : int = 0 
+    while fila < len(t0) and res:
+        columna : int = 0
+        while columna < len(t0[fila]) and res:
+            pos_actual : Posicion = Posicion(fila, columna)
+            no_es_posicion_excluida : bool = pos_actual != pos
+            coinciden_en_posicion : bool = tablerosCoincidenEnLaPosicion(t0,t1, pos_actual)
+            
 
+            if no_es_posicion_excluida:
+                res = coinciden_en_posicion
 
-def tablero_sacando_pieza(t: Tablero, pos: Posicion) -> Tablero:
-    """
-    Devuelve un tablero igual a *t*, salvo que la casilla en la posición *pos* queda vacía.
+            columna += 1
+        fila +=1
 
-    PRE: *t* es un tablero bien formado y *pos* es una posición dentro del tablero.
+    return res
 
+def esTableroSacandoPieza(t0 : Tablero, t1 : Tablero, pos : Posicion) -> bool:
+    res : bool = tablerosCoincidenSalvoEnLaPosicion(t0, t1, pos) and hay_casilla_vacia(t1, pos)
+    return res
+
+def esTableroPoniendoPieza(t0 : Tablero, t1 : Tablero, pos : Posicion, f : Figura, col : Color) -> bool:
+    res : bool = tablerosCoincidenSalvoEnLaPosicion(t0, t1, pos) and hayFiguraDeColor(t1, pos, f, col)
+    return res
+
+def copiarTablero(t0 : Tablero) -> Tablero:
+    res : Tablero = []
+    for fila in t0:
+        res.append(fila.copy())
+    return res
+
+def sacarPieza(t0 : Tablero, pos : Posicion) -> Tablero :
+    res : Tablero = copiarTablero(t0)
+    res[pos.fila][pos.columna] = VACIA
+    return res
+
+def esTableroTrasladandoPieza(t0 : Tablero, t1: Tablero, pos_origen : Posicion, pos_destino : Posicion) -> bool:
+    """Indica si t1 resulta de trasladar la pieza de pos_origen a pos_destino en t0.
+    
+    PRE: hayPieza(t0, pos_origen) y posicionEnTablero(pos_destino)
+    
     Args:
-        t (Tablero): El tablero original.
-        pos (Posicion): La posición de la casilla que se vacía.
-
+        t0 (Tablero): Tablero inicial.
+        t1 (Tablero): Tablero resultante.
+        pos_origen (Posicion): Posición de la pieza a mover.
+        pos_destino (Posicion): Posición de destino de la pieza.
+        
     Returns:
-        Un tablero nuevo igual a *t* con la casilla en *pos* vacía.
+        True si t1 es el tablero resultante de trasladar la pieza, False en caso contrario.
     """
-    tablero_nuevo: Tablero = copiar_tablero(t)
-    tablero_nuevo[pos.fila][pos.columna] = VACIA
-    return tablero_nuevo
+    t_intermedio = sacarPieza(t0, pos_origen)
+    figura_pieza : Figura = casilla_en_posicion(t0, pos_origen).figura
+    color_pieza : Color = casilla_en_posicion(t0, pos_origen).color
+    esta_en_t0 : bool = hayFiguraDeColor(t0, pos_origen, figura_pieza, color_pieza)
+    no_esta_en_t_intermedio : bool = esTableroSacandoPieza(t0, t_intermedio, pos_origen)
+    esta_en_destino_t1 : bool = esTableroPoniendoPieza(t_intermedio, t1, pos_destino, figura_pieza, color_pieza)
+    res : bool = esta_en_t0 and no_esta_en_t_intermedio and esta_en_destino_t1
+    return res
+
+def esTableroDespuesDeActivarTrampa(t0 : Tablero, t1 : Tablero, pos_trampa : Posicion) -> bool:
+    res : bool = False
+    if not hay_casilla_vacia(t0, pos_trampa) and hayPiezaAmigaVecina(t0, pos_trampa):
+        res = t1 == t0
+    else:
+        res = esTableroSacandoPieza(t0, t1, pos_trampa)
+    return res
+
     
 
-def tablero_despues_de_activar_trampa(t: Tablero, pos: Posicion) -> Tablero:
+def activarTrampa(t: Tablero, pos: Posicion) -> Tablero:
     """
     Devuelve el tablero que resulta de activar la trampa ubicada en *pos* sobre *t*.
     Si en *pos* hay una pieza sin piezas vecinas de su mismo color, se retira del tablero.
@@ -677,15 +730,20 @@ def tablero_despues_de_activar_trampa(t: Tablero, pos: Posicion) -> Tablero:
     Returns:
         Un tablero nuevo con la trampa en *pos* activada.
     """
-    tablero_nuevo: Tablero = copiar_tablero(t)
+    tablero_con_trampa_activada : Tablero = t
     if not hay_casilla_vacia(t, pos) and not hay_pieza_amiga_vecina(t, pos):
-        tablero_nuevo = tablero_sacando_pieza(t, pos)
-    return tablero_nuevo
+        tablero_con_trampa_activada = sacarPieza(t, pos)
+    return tablero_con_trampa_activada
 
+def activarTodasLasTrampas(t : Tablero) -> Tablero:
+
+    tablero_con_trampas_activas : Tablero = copiarTablero(t)
+    for posicion_trampa in POSICIONES_TRAMPA:
+        tablero_con_trampas_activas = activarTrampa(tablero_con_trampas_activas, posicion_trampa)
+    return tablero_con_trampas_activas
 
 def activar_trampas(t: Tablero) -> Tablero:
-    """
-    Devuelve el tablero que resulta de activar, en orden, las cuatro casillas trampa sobre *t*.
+    """ Devuelve el tablero que resulta de activar, en orden, las cuatro casillas trampa sobre *t*.
     Cada pieza que esté en una casilla trampa sin piezas vecinas de su mismo color se retira del tablero.
 
     PRE: *t* es un tablero bien formado.
@@ -696,11 +754,13 @@ def activar_trampas(t: Tablero) -> Tablero:
     Returns:
         Un tablero nuevo, bien formado, con todas las trampas activadas.
     """
-    tablero_nuevo: Tablero = copiar_tablero(t)
-    for posicion_trampa in POSICIONES_TRAMPA:
-        tablero_nuevo = tablero_despues_de_activar_trampa(tablero_nuevo, posicion_trampa)
-    return tablero_nuevo
+    res : Tablero = activarTodasLasTrampas(t)
+    return res
 
+def esTableroDespuesDeActivarTodasLasTrampas(t0 : Tablero, t1 : Tablero):
+    tablero_esperado : Tablero = activar_trampas(t0)
+    res : bool = (t1 == tablero_esperado)
+    return res
 
 #### Ejercicio 6
 
