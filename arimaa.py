@@ -764,12 +764,6 @@ def esTableroDespuesDeActivarTodasLasTrampas(t0 : Tablero, t1 : Tablero):
 
 #### Ejercicio 6
 
-def tableroPostMoverASecas(t0 : Tablero, t1 : Tablero, pos : Posicion, d : Direccion) -> bool:
-    pos_destino = posicion_vecina_hacia(pos, d)
-    if posicion_en_tablero(pos_destino):
-        pass    
-    pass
-
 def realizar_movimiento(j : Juego, m : Movimiento) -> Juego:
     raise Exception("No implementado")
 
