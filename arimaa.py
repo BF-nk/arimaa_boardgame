@@ -600,7 +600,7 @@ def puedeRealizarMovimiento(j : Juego, m : Movimiento) -> bool:
     col : Color = j.turno
     d : Direccion = m.pasos[0]
     pasos_consumidos : int = j.pasos_consumidos
-    quedan_pasos : bool = pasos_consumidos <= MAX_PASOS
+    quedan_pasos : bool = pasos_consumidos + len(m.pasos) <= MAX_PASOS
 
     res : bool = hayPiezaDeColor(t, pos, col) and (not hay_pieza_congelada(t, pos)) and direccionDeMovimientoHabilitada(t, pos, d) and quedan_pasos and puedeRealizarAccion(t, m)
     return res
@@ -706,9 +706,11 @@ def esTableroTrasladandoPieza(t0 : Tablero, t1: Tablero, pos_origen : Posicion, 
     return res
 
 def esTableroDespuesDeActivarTrampa(t0 : Tablero, t1 : Tablero, pos_trampa : Posicion) -> bool:
+    """Verifica si t1 es el resultado de evaluar la trampa en pos_trampa sobre t0."""
     res : bool = False
-    if not hay_casilla_vacia(t0, pos_trampa) and hayPiezaAmigaVecina(t0, pos_trampa):
-        res = t1 == t0
+    
+    if hay_casilla_vacia(t0, pos_trampa) or hayPiezaAmigaVecina(t0, pos_trampa):
+        res = (t1 == t0)
     else:
         res = esTableroSacandoPieza(t0, t1, pos_trampa)
     return res
@@ -716,24 +718,10 @@ def esTableroDespuesDeActivarTrampa(t0 : Tablero, t1 : Tablero, pos_trampa : Pos
     
 
 def activarTrampa(t: Tablero, pos: Posicion) -> Tablero:
-    """
-    Devuelve el tablero que resulta de activar la trampa ubicada en *pos* sobre *t*.
-    Si en *pos* hay una pieza sin piezas vecinas de su mismo color, se retira del tablero.
-    En cualquier otro caso, el tablero queda igual.
-
-    PRE: *t* es un tablero bien formado y *pos* es una posición dentro del tablero.
-
-    Args:
-        t (Tablero): El tablero sobre el que se activa la trampa.
-        pos (Posicion): La posición de la casilla trampa.
-
-    Returns:
-        Un tablero nuevo con la trampa en *pos* activada.
-    """
-    tablero_con_trampa_activada : Tablero = t
+    res : Tablero = copiarTablero(t)
     if not hay_casilla_vacia(t, pos) and not hay_pieza_amiga_vecina(t, pos):
-        tablero_con_trampa_activada = sacarPieza(t, pos)
-    return tablero_con_trampa_activada
+        res = sacarPieza(t, pos)
+    return res
 
 def activarTodasLasTrampas(t : Tablero) -> Tablero:
 
