@@ -764,8 +764,69 @@ def esTableroDespuesDeActivarTodasLasTrampas(t0 : Tablero, t1 : Tablero):
 
 #### Ejercicio 6
 
+
+def moverASecas(t : Tablero, pos : Posicion, d : Direccion) -> Tablero:
+    pos_destino : Posicion = posicion_vecina_hacia(pos, d)
+    casilla_origen : Casilla = t[pos.fila][pos.columna]
+    
+    t[pos_destino.fila][pos_destino.columna] = casilla_origen
+    t[pos.fila][pos.columna] = VACIA
+    
+    return t
+
+def arrastrar(t : Tablero, pos : Posicion, d : Direccion, d_arrastrar : Direccion) -> Tablero:
+    pos_destino : Posicion = posicion_vecina_hacia(pos, d)
+    pos_arrastre : Posicion = posicion_vecina_hacia(pos, opuesta(d_arrastrar))
+    casilla_arrastre : Casilla = t[pos_arrastre.fila][pos_arrastre.columna]
+    casilla_origen : Casilla = t[pos.fila][pos.columna]
+
+    t[pos_destino.fila][pos_destino.columna] = casilla_origen
+    t[pos.fila][pos.columna] = casilla_arrastre
+    t[pos_arrastre.fila][pos_arrastre.columna] = VACIA
+    return t
+
+def empujar(t : Tablero, pos : Posicion, d : Direccion, d_empuje: Direccion) -> Tablero:
+    pos_destino : Posicion = posicion_vecina_hacia(pos, d)
+    pos_empuje : Posicion = posicion_vecina_hacia(pos_destino, d_empuje)
+    pieza_destino : Casilla = t[pos_destino.fila][pos_destino.columna]
+    pieza_origen : Casilla = t[pos.fila][pos.columna]
+
+    
+    t[pos_empuje.fila][pos_empuje.columna] = pieza_destino
+    t[pos_destino.fila][pos_destino.columna] = pieza_origen
+    t[pos.fila][pos.columna] = VACIA
+    
+    return t
+
+def crearJuegoPostMovimiento(j : Juego, t : Tablero, pasos_consumidos : int) -> Juego:
+    if pasos_consumidos == MAX_PASOS:
+        nuevo_turno : Color = oponente(j.turno)
+        nuevos_pasos : int = 0
+    else:
+        nuevo_turno : Color = j.turno
+        nuevos_pasos : int = pasos_consumidos
+    nuevo_juego = Juego(t, nuevo_turno, nuevos_pasos)
+    return nuevo_juego
+
+
 def realizar_movimiento(j : Juego, m : Movimiento) -> Juego:
-    raise Exception("No implementado")
+    accion : Accion = m.accion
+    tablero : Tablero = copiarTablero(j.tablero)
+    pos_origen : Posicion = m.origen
+    pasos_movimiento : list[Direccion] = m.pasos
+    pasos_consumidos : int = j.pasos_consumidos
+
+    if accion == MOVER_A_SECAS:
+        tablero = moverASecas(tablero, pos_origen, pasos_movimiento[0])
+    elif accion == ARRASTRAR:
+        tablero = arrastrar(tablero, pos_origen, pasos_movimiento[0], pasos_movimiento[1])
+    else:
+        tablero = empujar(tablero, pos_origen, pasos_movimiento[0], pasos_movimiento[1])
+
+    tablero_nuevo : Tablero = activar_trampas(tablero)
+    pasos_totales = pasos_consumidos + len(pasos_movimiento)
+    nuevo_juego : Juego = crearJuegoPostMovimiento(j , tablero_nuevo, pasos_totales)
+    return nuevo_juego
 
 #### Ejercicio 7
 
