@@ -753,56 +753,142 @@ def esTableroDespuesDeActivarTodasLasTrampas(t0 : Tablero, t1 : Tablero):
 #### Ejercicio 6
 
 
-def moverASecas(t : Tablero, pos : Posicion, d : Direccion) -> Tablero:
-    pos_destino : Posicion = posicion_vecina_hacia(pos, d)
-    casilla_origen : Casilla = t[pos.fila][pos.columna]
+def moverASecas(t: Tablero, pos: Posicion, d: Direccion) -> Tablero:
+    """Traslada la pieza ubicada en la posición pos una casilla hacia la dirección d.
+
+    PRE: 
+        tableroBienFormado(t)
+        posicionEnTablero(pos)
+        hayPieza(t, pos)
+        puedeMoverASecas(t, pos, d)
+
+    Args:
+        t (Tablero): El tablero sobre el cual se realiza el movimiento.
+        pos (Posicion): La posición de origen de la pieza a mover.
+        d (Direccion): La dirección hacia la cual se desplaza la pieza.
+
+    Returns:
+        Un nuevo tablero resultante de mover la pieza a secas.
+    """
+    pos_destino: Posicion = posicion_vecina_hacia(pos, d)
+    casilla_origen: Casilla = t[pos.fila][pos.columna]
     
     t[pos_destino.fila][pos_destino.columna] = casilla_origen
     t[pos.fila][pos.columna] = VACIA
     
     return t
 
-def arrastrar(t : Tablero, pos : Posicion, d : Direccion, d_arrastrar : Direccion) -> Tablero:
-    pos_destino : Posicion = posicion_vecina_hacia(pos, d)
-    pos_arrastre : Posicion = posicion_vecina_hacia(pos, opuesta(d_arrastrar))
-    casilla_arrastre : Casilla = t[pos_arrastre.fila][pos_arrastre.columna]
-    casilla_origen : Casilla = t[pos.fila][pos.columna]
+
+def arrastrar(t: Tablero, pos: Posicion, d: Direccion, d_arrastrar: Direccion) -> Tablero:
+    """Traslada la pieza ubicada en pos hacia la dirección d y arrastra a una pieza enemiga
+    adyacente hacia la casilla de origen pos.
+
+    PRE: 
+        tableroBienFormado(t)
+        posicionEnTablero(pos)
+        hayPieza(t, pos)
+        puedeArrastrar(t, pos, d, d_arrastrar)
+
+    Args:
+        t (Tablero): El tablero sobre el cual se realiza el arrastre.
+        pos (Posicion): La posición de la pieza propia que inicia el movimiento.
+        d (Direccion): La dirección hacia la cual se mueve la pieza propia.
+        d_arrastrar (Direccion): La dirección de movimiento de la pieza enemiga arrastrada.
+
+    Returns:
+        Un nuevo tablero con ambas piezas trasladadas según la acción de arrastrar.
+    """
+    pos_destino: Posicion = posicion_vecina_hacia(pos, d)
+    pos_arrastre: Posicion = posicion_vecina_hacia(pos, opuesta(d_arrastrar))
+    casilla_arrastre: Casilla = t[pos_arrastre.fila][pos_arrastre.columna]
+    casilla_origen: Casilla = t[pos.fila][pos.columna]
 
     t[pos_destino.fila][pos_destino.columna] = casilla_origen
     t[pos.fila][pos.columna] = casilla_arrastre
     t[pos_arrastre.fila][pos_arrastre.columna] = VACIA
     return t
 
-def empujar(t : Tablero, pos : Posicion, d : Direccion, d_empuje: Direccion) -> Tablero:
-    pos_destino : Posicion = posicion_vecina_hacia(pos, d)
-    pos_empuje : Posicion = posicion_vecina_hacia(pos_destino, d_empuje)
-    pieza_destino : Casilla = t[pos_destino.fila][pos_destino.columna]
-    pieza_origen : Casilla = t[pos.fila][pos.columna]
 
-    
+def empujar(t: Tablero, pos: Posicion, d: Direccion, d_empuje: Direccion) -> Tablero:
+    """Desplaza una pieza enemiga adyacente ubicada en dirección d hacia d_empuje,
+    y mueve la pieza propia en pos hacia la casilla dejada por el enemigo.
+
+    PRE: 
+        tableroBienFormado(t)
+        posicionEnTablero(pos)
+        hayPieza(t, pos)
+        puedeEmpujar(t, pos, d, d_empuje)
+
+    Args:
+        t (Tablero): El tablero sobre el cual se realiza el empuje.
+        pos (Posicion): La posición de origen de la pieza propia que empuja.
+        d (Direccion): La dirección donde se encuentra la pieza enemiga a empujar.
+        d_empuje (Direccion): La dirección hacia la cual es empujada la pieza enemiga.
+
+    Returns:
+        Un nuevo tablero con las piezas desplazadas tras el empuje.
+    """
+    pos_destino: Posicion = posicion_vecina_hacia(pos, d)
+    pos_empuje: Posicion = posicion_vecina_hacia(pos_destino, d_empuje)
+    pieza_destino: Casilla = t[pos_destino.fila][pos_destino.columna]
+    pieza_origen: Casilla = t[pos.fila][pos.columna]
+
     t[pos_empuje.fila][pos_empuje.columna] = pieza_destino
     t[pos_destino.fila][pos_destino.columna] = pieza_origen
     t[pos.fila][pos.columna] = VACIA
     
     return t
 
-def crearJuegoPostMovimiento(j : Juego, t : Tablero, pasos_consumidos : int) -> Juego:
+
+def crearJuegoPostMovimiento(j: Juego, t: Tablero, pasos_consumidos: int) -> Juego:
+    """Genera el nuevo estado de Juego tras un movimiento, actualizando el tablero, 
+    el turno del jugador y la cantidad de pasos consumidos.
+
+    PRE: 
+        juegoBienFormado(j)
+        tableroBienFormado(t)
+        0 <= pasos_consumidos <= MAX_PASOS
+
+    Args:
+        j (Juego): El estado del juego previo al movimiento.
+        t (Tablero): El tablero resultante tras aplicar el movimiento y activar trampas.
+        pasos_consumidos (int): La cantidad acumulada de pasos tras el movimiento actual.
+
+    Returns:
+        Una nueva instancia de Juego con el turno y los pasos consumidos correspondientes.
+    """
     if pasos_consumidos == MAX_PASOS:
-        nuevo_turno : Color = oponente(j.turno)
-        nuevos_pasos : int = 0
+        nuevo_turno: Color = oponente(j.turno)
+        nuevos_pasos: int = 0
     else:
-        nuevo_turno : Color = j.turno
-        nuevos_pasos : int = pasos_consumidos
+        nuevo_turno: Color = j.turno
+        nuevos_pasos: int = pasos_consumidos
+        
     nuevo_juego = Juego(t, nuevo_turno, nuevos_pasos)
     return nuevo_juego
 
 
-def realizar_movimiento(j : Juego, m : Movimiento) -> Juego:
-    accion : Accion = m.accion
-    tablero : Tablero = copiarTablero(j.tablero)
-    pos_origen : Posicion = m.origen
-    pasos_movimiento : list[Direccion] = m.pasos
-    pasos_consumidos : int = j.pasos_consumidos
+def realizar_movimiento(j: Juego, m: Movimiento) -> Juego:
+    """Devuelve el estado del juego resultante de realizar el movimiento m sobre j.
+
+    PRE: 
+        juegoBienFormado(j)
+        movimientoBienFormado(m)
+        puedeRealizarMovimiento(j, m)
+
+    Args:
+        j (Juego): Estado actual del juego.
+        m (Movimiento): El movimiento que se desea ejecutar.
+
+    Returns:
+        Un nuevo objeto Juego que representa el estado del juego tras aplicar m,
+        haber activado todas las trampas correspondientes y actualizado el turno y pasos.
+    """
+    accion: Accion = m.accion
+    tablero: Tablero = copiarTablero(j.tablero)
+    pos_origen: Posicion = m.origen
+    pasos_movimiento: list[Direccion] = m.pasos
+    pasos_consumidos: int = j.pasos_consumidos
 
     if accion == MOVER_A_SECAS:
         tablero = moverASecas(tablero, pos_origen, pasos_movimiento[0])
@@ -811,9 +897,9 @@ def realizar_movimiento(j : Juego, m : Movimiento) -> Juego:
     else:
         tablero = empujar(tablero, pos_origen, pasos_movimiento[0], pasos_movimiento[1])
 
-    tablero_nuevo : Tablero = activar_trampas(tablero)
-    pasos_totales = pasos_consumidos + len(pasos_movimiento)
-    nuevo_juego : Juego = crearJuegoPostMovimiento(j , tablero_nuevo, pasos_totales)
+    tablero_nuevo: Tablero = activar_trampas(tablero)
+    pasos_totales: int = pasos_consumidos + len(pasos_movimiento)
+    nuevo_juego: Juego = crearJuegoPostMovimiento(j, tablero_nuevo, pasos_totales)
     return nuevo_juego
 
 #### Ejercicio 7
