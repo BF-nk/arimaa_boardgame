@@ -931,6 +931,7 @@ def hayConejoEnTablero(j : Juego, col : Color) -> bool:
     Returns:
         True si hay al menos un conejo de color col en el tablero, False en caso contrario.
     """
+    
     tablero = j.tablero
     i : int = 0
     res : bool = False
