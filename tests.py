@@ -527,7 +527,7 @@ class test_puede_realizar_movimiento(unittest.TestCase):
                 "---D----",  # 2
                 "--------",  # 1
                 "-mD--mDR",  # 0
-                # 01234567
+                #01234567
             ]
         )
 
@@ -535,9 +535,9 @@ class test_puede_realizar_movimiento(unittest.TestCase):
     # MOVER_A_SECAS
 
     def test_mover_a_secas_ok(self):
-        # Mover un perro plateado (d en (3, 4)) hacia casilla vacía al SUR (3, 3 es vacía)
+        # Mover un elefante plateado (e en (7, 2)) hacia casilla vacía al SUR (6, 2 es vacía)
         j = Juego(self.tablero_base, PLATEADO, 0)
-        m = Movimiento(MOVER_A_SECAS, Posicion(3, 4), [SUR])
+        m = Movimiento(MOVER_A_SECAS, Posicion(7, 2), [SUR])
         self.assertTrue(puede_realizar_movimiento(j, m))
 
     def test_mover_a_secas_casilla_ocupada(self):
