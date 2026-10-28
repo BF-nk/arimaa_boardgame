@@ -131,7 +131,7 @@ def casilla_en_posicion(t : Tablero, p : Posicion) -> Casilla:
 
     PRE:
         tablero_bien_formado(t)
-        posicion_en_tablero(t)
+        posicion_en_tablero(p)
 
     Args:
         t (Tablero): El tablero del juego.
