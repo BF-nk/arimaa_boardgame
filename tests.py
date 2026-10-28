@@ -514,21 +514,179 @@ class test_hay_pieza_congelada(unittest.TestCase):
 
 class test_puede_realizar_movimiento(unittest.TestCase):
 
+    def setUp(self):
+        # Tablero base de prueba
+        # Filas 0 a 7
+        self.tablero_base = leer_tablero(
+            [
+                "--eMr---",  # 7
+                "--------",  # 6
+                "-R----r-",  # 5
+                "--------",  # 4
+                "--mMd---",  # 3
+                "---D----",  # 2
+                "--------",  # 1
+                "-mD--mDR",  # 0
+                # 01234567
+            ]
+        )
+
+
+    # MOVER_A_SECAS
+
     def test_mover_a_secas_ok(self):
-        t = leer_tablero([
-              '--eMr---', #7
-              '--------', #6
-              '-R----r-', #5
-              '--------', #4
-              '--mMd---', #3
-              '---D----', #2
-              '--------', #1
-              '-mD--mDR', #0
-              #01234567
-            ])
-        j = Juego(t, PLATEADO, 0)
-        m = Movimiento(MOVER_A_SECAS, Posicion(0, 1), [NORTE])
+        # Mover un perro plateado (d en (3, 4)) hacia casilla vacía al SUR (3, 3 es vacía)
+        j = Juego(self.tablero_base, PLATEADO, 0)
+        m = Movimiento(MOVER_A_SECAS, Posicion(3, 4), [SUR])
         self.assertTrue(puede_realizar_movimiento(j, m))
+
+    def test_mover_a_secas_casilla_ocupada(self):
+        # Intenta mover elefante plateado (e en (7, 2)) al ESTE donde hay un camello (M)
+        j = Juego(self.tablero_base, PLATEADO, 0)
+        m = Movimiento(MOVER_A_SECAS, Posicion(7, 2), [ESTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))
+
+    # RESTRICCIONES DE CONEJOS (Retroceso)
+
+    def test_conejo_dorado_no_puede_retroceder(self):
+        # Conejo dorado (R en (5, 1)) no puede mover al SUR (retroceder para dorado)
+        j = Juego(self.tablero_base, DORADO, 0)
+        m = Movimiento(MOVER_A_SECAS, Posicion(5, 1), [SUR])
+        self.assertFalse(puede_realizar_movimiento(j, m))
+
+    def test_conejo_plateado_no_puede_retroceder(self):
+        # Conejo plateado (r en (5, 6)) no puede mover al NORTE (retroceder para plateado)
+        j = Juego(self.tablero_base, PLATEADO, 0)
+        m = Movimiento(MOVER_A_SECAS, Posicion(5, 6), [NORTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))
+
+    # CONGELAMIENTO
+
+    def test_pieza_congelada_no_puede_mover(self):
+        # Tablero donde un gato plateado (c en (3, 3)) está congelado por un perro dorado (D en (3, 4))
+        # y no tiene piezas amigas adyacentes
+        t = leer_tablero(
+            [
+                "--------",  # 7
+                "--------",  # 6
+                "--------",  # 5
+                "--------",  # 4
+                "---cD---",  # 3
+                "--------",  # 2
+                "--------",  # 1
+                "--------",  # 0
+                # 01234567
+            ]
+        )
+        j = Juego(t, PLATEADO, 0)
+        m = Movimiento(MOVER_A_SECAS, Posicion(3, 3), [OESTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))
+
+
+    # PASOS EXCEDIDOS
+
+    def test_pasos_excedidos(self):
+        # El jugador ya consumió 3 pasos y el movimiento requiere 2 pasos (ej: EMPUJAR)
+        j = Juego(self.tablero_base, PLATEADO, 3)
+        m = Movimiento(EMPUJAR, Posicion(7, 2), [SUR, SUR])
+        self.assertFalse(puede_realizar_movimiento(j, m))
+
+
+    # TURNO/ORIGEN INCORRECTO
+
+    def test_mover_pieza_del_oponente(self):
+        # Le toca a DORADO pero intenta mover una pieza PLATEADA (e en (7, 2))
+        j = Juego(self.tablero_base, DORADO, 0)
+        m = Movimiento(MOVER_A_SECAS, Posicion(7, 2), [SUR])
+        self.assertFalse(puede_realizar_movimiento(j, m))
+
+    def test_origen_vacío(self):
+        # Le toca a DORADO pero intenta mover desde una casilla vacía (0, 0)
+        j = Juego(self.tablero_base, DORADO, 0)
+        m = Movimiento(MOVER_A_SECAS, Posicion(0, 0), [NORTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))
+
+  
+    # ARRASTRAR
+
+    def test_arrastrar_ok(self):
+        # Elefante dorado (E) en (3, 3) arrastra conejo plateado (r) en (3, 2)
+        # El elefante se mueve al NORTE (3,3 -> 4,3) y trae al conejo al ESTE (3,2 -> 3,3)
+        t = leer_tablero(
+            [
+                "--------",  # 7
+                "--------",  # 6
+                "--------",  # 5
+                "--------",  # 4
+                "--rE----",  # 3
+                "--------",  # 2
+                "--------",  # 1
+                "--------",  # 0
+                # 01234567
+            ]
+        )
+        j = Juego(t, DORADO, 0)
+        m = Movimiento(ARRASTRAR, Posicion(3, 3), [NORTE, ESTE])
+        self.assertTrue(puede_realizar_movimiento(j, m))
+
+    def test_arrastrar_invalido_enemigo_mas_fuerte(self):
+        # Intenta arrastrar una pieza enemiga que es más fuerte o de igual fuerza
+        t = leer_tablero(
+            [
+                "--------",  # 7
+                "--------",  # 6
+                "--------",  # 5
+                "--------",  # 4
+                "--eE----",  # 3 (e y E tienen misma fuerza)
+                "--------",  # 2
+                "--------",  # 1
+                "--------",  # 0
+                # 01234567
+            ]
+        )
+        j = Juego(t, DORADO, 0)
+        m = Movimiento(ARRASTRAR, Posicion(3, 3), [NORTE, ESTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))
+
+    # EMPUJAR
+
+    def test_empujar_ok(self):
+        # Camello dorado (M) en (3, 3) empuja perro plateado (d) en (3, 4) al ESTE (3,5 vacía)
+        t = leer_tablero(
+            [
+                "--------",  # 7
+                "--------",  # 6
+                "--------",  # 5
+                "--------",  # 4
+                "---Md---",  # 3
+                "--------",  # 2
+                "--------",  # 1
+                "--------",  # 0
+                # 01234567
+            ]
+        )
+        j = Juego(t, DORADO, 0)
+        m = Movimiento(EMPUJAR, Posicion(3, 3), [ESTE, ESTE])
+        self.assertTrue(puede_realizar_movimiento(j, m))
+
+    def test_empujar_sin_casilla_libre(self):
+        # Intenta empujar pero la casilla detrás del enemigo está ocupada
+        t = leer_tablero(
+            [
+                "--------",  # 7
+                "--------",  # 6
+                "--------",  # 5
+                "--------",  # 4
+                "---Mde--",  # 3 (detrás del perro 'd' está el elefante 'e')
+                "--------",  # 2
+                "--------",  # 1
+                "--------",  # 0
+                # 01234567
+            ]
+        )
+        j = Juego(t, DORADO, 0)
+        m = Movimiento(EMPUJAR, Posicion(3, 3), [ESTE, ESTE])
+        self.assertFalse(puede_realizar_movimiento(j, m))
 
 #### Ejercicio 5
 
