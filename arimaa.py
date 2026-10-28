@@ -126,26 +126,6 @@ def posicion_vecina_hacia(pos : Posicion, d : Direccion) -> Posicion:
     
     return res
 
-def esPosicionVecinaHacia(pos1 : Posicion, d : Direccion, pos2 : Posicion) -> bool:
-    """Indica si pos2 es la posición vecina a pos1 en la dirección d.
-
-    PRE:
-        posicion_en_tablero(pos1)
-        posicion_en_tablero(pos2)
-        d in DIRECCIONES
-
-    Args:
-        pos1 (Posicion): La posición de referencia.
-        pos2 (Posicion): La posición a consultar.
-        d (Direccion): La dirección hacia la que se busca la posición vecina.
-
-    Returns:
-        bool: True si pos2 es la posición vecina a pos1 en la dirección d, False en caso contrario.
-    """
-    casilla_vecina : Posicion = posicion_vecina_hacia(pos1, d)
-    res : bool = (casilla_vecina == pos2)
-    return res
-
 def casilla_en_posicion(t : Tablero, p : Posicion) -> Casilla:
     """Devuelve la posición p de una casilla en el tablero t
 
@@ -850,24 +830,6 @@ def hayConejoEnTablero(j : Juego, col : Color) -> bool:
             h += 1
         i += 1
 
-    return res
-
-def posicionEnFilaInicial(pos : Posicion, col : Color) -> bool:
-    """
-    Indica si la posición dada pertenece a la fila inicial correspondiente al color indicado.
-
-    PRE: posicion_en_tablero(pos)
-    Args:
-        pos (Posicion): La posición a evaluar en el tablero.
-        col (Color): El color del jugador (DORADO o PLATEADO).
-    Returns:
-        True si la posición corresponde a la fila 0 para DORADO o fila 7 para PLATEADO.
-    """
-    res : bool = False
-    if col == DORADO:
-        res = pos.fila == 0
-    else:
-        res = pos.fila == 7
     return res
 
 def filaInicialColor(t: Tablero, col: Color) -> list[Posicion]:
