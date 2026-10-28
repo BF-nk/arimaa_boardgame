@@ -519,6 +519,16 @@ def hay_pieza_congelada(t : Tablero, pos : Posicion) -> bool:
 ##AUX 1 (veo si la direccion es valida)
 
 def esDireccionHabilitadaParaFiguraDeColor(f : Figura, col : Color, d : Direccion) -> bool:
+    """Indica si la dirección d es válida para la figura f de color col, considerando las restricciones específicas de movimiento.
+    PRE:
+        True
+    Args: 
+        f (Figura): La figura de la pieza que se desea mover.
+        col (Color): El color de la figura.
+        d (Direccion): La dirección de movimiento.
+    Returns:
+        bool: True si la dirección es válida para la figura y color dados, False en caso contrario.
+    """
     res : bool = True
     if f == CONEJO and col == DORADO and d == SUR:
         res = False
@@ -527,6 +537,17 @@ def esDireccionHabilitadaParaFiguraDeColor(f : Figura, col : Color, d : Direccio
     return res
 
 def direccionDeMovimientoHabilitada(t : Tablero, pos : Posicion, d : Direccion) -> bool:
+    """Indica si el movimiento en la dirección d es válido para la pieza en la posición pos.
+    PRE:
+        tablero_bien_formado(t)
+        posicion_en_tablero(pos)
+    Args:
+        t (Tablero): El tablero de juego.
+        pos (Posicion): La posición de la pieza.
+        d (Direccion): La dirección de movimiento.
+    Returns:
+        bool: True si la dirección es válida para el movimiento, False en caso contrario.
+    """
     casillero : Casilla = casilla_en_posicion(t, pos)
     f : Figura = casillero.figura
     col : Color = casillero.color
@@ -535,15 +556,52 @@ def direccionDeMovimientoHabilitada(t : Tablero, pos : Posicion, d : Direccion) 
 
 ##AUX3 realizar accion (verificamos primero que pueda efectivamente realizar alguno de esos movimientos con las siguentes auxiliares:)
 def puedeMoverASecas(t:Tablero, pos: Posicion, d: Direccion) -> bool:
+    """Indica si una pieza ubicada en la posición pos puede realizar un movimiento simple (moverse a secas) en la dirección d.
+    PRE:
+        tablero_bien_formado(t)
+        posicion_en_tablero(pos)
+    Args: 
+        t (Tablero): El tablero de juego.
+        pos (Posicion): La posición de la pieza que se mueve.
+        d (Direccion): La dirección hacia la cual se desea mover la pieza.
+    Returns:
+        bool: True si la casilla de destino en la dirección d está vacía y la pieza puede moverse a secas hacia ella, False en caso contrario.
+    
+    """
     res: bool = hayCasillaVaciaHacia(t ,pos, d)
     return res
 
 def puedeArrastrar(t:Tablero, pos: Posicion, d :Direccion, d_arrastre: Direccion) -> bool:
+    """Indica si una pieza ubicada en la posicion pos puede realizar un movimiento de arrastre en la dirección d, arrastrando a una pieza enemiga hacia la dirección opuesta a d_arrastre.
+    PRE:
+        tablero_bien_formado(t)
+        posicion_en_tablero(pos)
+    Args:
+        t (Tablero): El tablero de juego.
+        pos (Posicion): La posición de la pieza que se mueve.
+        d (Direccion): La dirección hacia la cual se desea mover la pieza principal.
+        d_arrastre (Direccion): La dirección en la que se arrastra la pieza enemiga.
+    Returns:
+        bool: True si se cumplen las condiciones casilla vacía hacia la dirección d y hay una pieza enemiga más débil en la dirección opuesta a d_arrastre, False en caso contrario.
+    """
     direccion_enemigo : Direccion = opuesta(d_arrastre)
     res:bool = hayCasillaVaciaHacia(t, pos, d) and hayPiezaEnemigaMasDebilHacia(t, pos, direccion_enemigo) 
     return res
 
 def puedeEmpujar(t:Tablero, pos: Posicion, d: Direccion, d_empuje: Direccion) -> bool:
+    """Indica si una pieza ubicada en la posición pos puede empujar a una pieza enemiga hacia la dirección d_empuje.
+    PRE:
+        tablero_bien_formado(t)
+        posicion_en_tablero(pos)
+    Args: 
+        t (Tablero): El tablero de juego.
+        pos (Posicion): La posición de la pieza que empuja.
+        d (Direccion): La dirección hacia la cual se encuentra la pieza enemiga a empujar.
+        d_empuje (Direccion): La dirección hacia la cual se empuja a la pieza enemiga.
+    Returns:
+        bool: True si hay una pieza enemiga más débil en la dirección d y la casilla vecina en la dirección d_empuje está vacía, False en caso contrario.
+    
+    """
     pos_enemiga: Posicion = posicion_vecina_hacia(pos, d)
     res: bool = hayPiezaEnemigaMasDebilHacia(t, pos, d) and hayCasillaVaciaHacia(t, pos_enemiga, d_empuje)
     return res 
@@ -554,7 +612,7 @@ def puedeRealizarAccion(t: Tablero, m: Movimiento) -> bool:
         tablero_bien_formado(t)
         movimiento_bien_formado(m)
         posicion_en_tablero(m.origen)
-    ARGS:
+    Args:
         t (Tablero): El tablero de juego.
         m (Movimiento): El movimiento o accion que se desea verificar. 
     Returns:
@@ -573,6 +631,18 @@ def puedeRealizarAccion(t: Tablero, m: Movimiento) -> bool:
     return res 
 
 def puedeRealizarMovimiento(j : Juego, m : Movimiento) -> bool:
+    """Indica si el movimiento m puede realizarse en el juego j.
+    PRE: 
+        juego_bien_formado(j)
+        movimiento_bien_formado(m)
+        posicion_en_tablero(m.origen)
+    Args: 
+        j (Juego): El juego en el que se desea realizar el movimiento( donde el juego incluye el tablero, turno y pasos consumidos).
+        m (Movimiento): El movimiento que se pretende o quiere realizar.
+    Returns:
+        bool: True si el movimiento puede realizarse, False en caso contrario.
+    """
+    
     t : Tablero = j.tablero
     pos : Posicion = m.origen
     col : Color = j.turno
@@ -589,7 +659,7 @@ def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
         juego_bien_formado(j)
         movimiento_bien_formado(m)
         posicion_en_tablero(m.origen)
-    ARGS:
+    Args:
         j (Juego): El juego en el que se desea realizar el movimiento( donde el juego incluye el tablero, turno y pasos consumidos).
         m (Movimiento): El movimiento que se pretende o quiere realizar. 
     Returns:
@@ -601,23 +671,66 @@ def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
 #### Ejercicio 5
 
 def copiarTablero(t0 : Tablero) -> Tablero:
+    """ Devuelve una copia del tablero ingresado(t0) para evitar modificar el original.
+    PRE: tablero_bien_formado(t0)
+    Args:
+        t0 (Tablero): El tablero original el cual se desea copiar
+    Returns:
+        Tablero: Una copia identica del tablero original t0.
+    """
     res : Tablero = []
     for fila in t0:
         res.append(fila.copy())
     return res
 
 def sacarPieza(t0 : Tablero, pos : Posicion) -> Tablero :
+    """ Devuelve un tablero nuevo en la cual la pieza ubicada en la posicion pos ha sido removida
+    PRE:
+        tablero_bien_formado(t0)
+        posicion_en_tablero(pos) 
+    Args:
+        t0 (Tablero): El tablero original del cual se desea remover la pieza.
+        pos (Posicion): La posicion de la casilla donde se encuentra la pieza que se desea remover.
+    Returns:
+        Tablero: Un tablero nuevo en el cual la pieza ubicada en pos ha sido removida.
+    """
+
     res : Tablero = copiarTablero(t0)
     res[pos.fila][pos.columna] = VACIA
     return res
 
 def activarTrampa(t: Tablero, pos: Posicion) -> Tablero:
+    """Verifica si la casilla en trampa pos debe activarse, en caso de que haya una pieza en ella sin piezas amigas vecinas, la pieza es removida del tablero.
+    PRE: 
+        tablero_bien_formado(t)
+        posicion_en_tablero(pos)
+    Args: 
+        t (Tablero): El tablero sobre el cual se activa la trampa.
+        pos (Posicion): La posición de la casilla trampa que se desea evaluar.
+    Returns:
+        Tablero: el tablero resultante después de haber evaluado la trampa.
+    
+    
+    """
+  
     res : Tablero = copiarTablero(t)
     if not hay_casilla_vacia(t, pos) and not hay_pieza_amiga_vecina(t, pos):
         res = sacarPieza(t, pos)
     return res
 
 def activarTodasLasTrampas(t : Tablero) -> Tablero:
+    """Aplica la activacion de trampas sobre todas las posiciones trampa del tablero
+     PRE:
+        tablero_bien_formado(t)
+    Args:
+        t (Tablero): El tablero sobre el cual se activan las trampas.
+    Returns:
+        Tablero: Un tablero nuevo con todas las trampas activadas.
+        
+        
+        """
+    
+
 
     tablero_con_trampas_activas : Tablero = copiarTablero(t)
     for posicion_trampa in POSICIONES_TRAMPA:
