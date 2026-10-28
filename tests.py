@@ -909,34 +909,183 @@ class test_activar_trampas(unittest.TestCase):
 
 class test_realizar_movimiento(unittest.TestCase):
  
+    # MOVER_A_SECAS
     def test_mover_a_secas(self):
-        t0 = leer_tablero([
-               'rrrrrrrr', #7
-               'ccddhh-e', #6
-               '--------', #5
-               '---m----', #4
-               '--------', #3
-               '--------', #2
-               'EMHHDDCC', #1
-               'RRRRRRRR', #0
-               #01234567
-             ])
-        tN = leer_tablero([
-               'rrrrrrrr', #7
-               'ccddhh-e', #6
-               '---m----', #5
-               '--------', #4
-               '--------', #3
-               '--------', #2
-               'EMHHDDCC', #1
-               'RRRRRRRR', #0
-               #01234567
-             ])
-        j0 = Juego(t0, PLATEADO, 0) 
-        jN = Juego(tN, PLATEADO, 1) 
+        t0 = leer_tablero(
+            [
+                "rrrrrrrr",  # 7
+                "ccddhh-e",  # 6
+                "--------",  # 5
+                "---m----",  # 4
+                "--------",  # 3
+                "--------",  # 2
+                "EMHHDDCC",  # 1
+                "RRRRRRRR",  # 0
+                # 01234567
+            ]
+        )
+        tN = leer_tablero(
+            [
+                "rrrrrrrr",  # 7
+                "ccddhh-e",  # 6
+                "---m----",  # 5
+                "--------",  # 4
+                "--------",  # 3
+                "--------",  # 2
+                "EMHHDDCC",  # 1
+                "RRRRRRRR",  # 0
+                # 01234567
+            ]
+        )
+        j0 = Juego(t0, PLATEADO, 0)
+        jN = Juego(tN, PLATEADO, 1)
         mN = Movimiento(MOVER_A_SECAS, Posicion(4, 3), [NORTE])
         self.assertTrue(puede_realizar_movimiento(j0, mN))
         self.assertEqual(realizar_movimiento(j0, mN), jN)
+
+
+    #CAMBIO DE TURNO AL LLEGAR A 4 PASOS
+
+    def test_mover_a_secas_cambio_de_turno(self):
+        # Tenía 3 pasos consumidos, realiza un movimiento de 1 paso (suma 4) -> cambia el turno a DORADO y reinicia pasos
+        t0 = leer_tablero(
+            [
+                "--------",  # 7
+                "--------",  # 6
+                "--------",  # 5
+                "---m----",  # 4
+                "--------",  # 3
+                "--------",  # 2
+                "--------",  # 1
+                "--------",  # 0
+                # 01234567
+            ]
+        )
+        tN = leer_tablero(
+            [
+                "--------",  # 7
+                "--------",  # 6
+                "---m----",  # 5
+                "--------",  # 4
+                "--------",  # 3
+                "--------",  # 2
+                "--------",  # 1
+                "--------",  # 0
+                # 01234567
+            ]
+        )
+        j0 = Juego(t0, PLATEADO, 3)
+        jN = Juego(tN, DORADO, 0)  # Cambio de turno y pasos en 0
+        mN = Movimiento(MOVER_A_SECAS, Posicion(4, 3), [NORTE])
+        self.assertEqual(realizar_movimiento(j0, mN), jN)
+
+
+    #ARRASTRAR
+
+    def test_arrastrar_ok(self):
+        # Elefante dorado (E) en (3,3) arrastra a un conejo plateado (r) en (3,2) hacia el NORTE
+        # E se mueve a (4,3) y trae a 'r' a la posición inicial de E (3,3)
+        # Consume 2 pasos
+        t0 = leer_tablero(
+            [
+                "--------",  # 7
+                "--------",  # 6
+                "--------",  # 5
+                "--------",  # 4
+                "--rE----",  # 3
+                "--------",  # 2
+                "--------",  # 1
+                "--------",  # 0
+                # 01234567
+            ]
+        )
+        tN = leer_tablero(
+            [
+                "--------",  # 7
+                "--------",  # 6
+                "--------",  # 5
+                "---E----",  # 4
+                "---r----",  # 3
+                "--------",  # 2
+                "--------",  # 1
+                "--------",  # 0
+                # 01234567
+            ]
+        )
+        j0 = Juego(t0, DORADO, 0)
+        jN = Juego(tN, DORADO, 2)
+        m = Movimiento(ARRASTRAR, Posicion(3, 3), [NORTE, ESTE])
+        self.assertEqual(realizar_movimiento(j0, m), jN)
+
+    #EMPUJAR
+
+    def test_empujar_ok(self):
+        # Camello dorado (M) en (3,3) empuja al perro plateado (d) en (3,4) hacia el ESTE (3,5)
+        # 'd' va a (3,5) y M toma su lugar en (3,4)
+        # Consume 2 pasos
+        t0 = leer_tablero(
+            [
+                "--------",  # 7
+                "--------",  # 6
+                "--------",  # 5
+                "--------",  # 4
+                "---Md---",  # 3
+                "--------",  # 2
+                "--------",  # 1
+                "--------",  # 0
+                # 01234567
+            ]
+        )
+        tN = leer_tablero(
+            [
+                "--------",  # 7
+                "--------",  # 6
+                "--------",  # 5
+                "--------",  # 4
+                "----Md--",  # 3
+                "--------",  # 2
+                "--------",  # 1
+                "--------",  # 0
+                # 01234567
+            ]
+        )
+        j0 = Juego(t0, DORADO, 1)
+        jN = Juego(tN, DORADO, 3)
+        m = Movimiento(EMPUJAR, Posicion(3, 3), [ESTE, ESTE])
+        self.assertEqual(realizar_movimiento(j0, m), jN)
+
+    #  MOVIMIENTO QUE ACTIVA TRAMPAS AUTOMÁTICAMENTE
+    def test_empujar_hacia_trampa_causa_eliminacion(self):
+
+        # Usemos un empuje donde E en (2, 4) empuja a d en (2, 3) HACIA la trampa C3 (2, 2):
+        t0 = leer_tablero([
+            '--------', #7
+            '--------', #6
+            '--------', #5
+            '--------', #4
+            '--------', #3
+            '---dE---', #2  (d en (2,3), E en (2,4))
+            '--------', #1
+            '--------', #0
+            #01234567
+        ])
+        # E empuja a 'd' al OESTE (d pasa a la trampa (2,2) y E pasa a (2,3))
+        # En la trampa (2,2), 'd' queda solo y se elimina.
+        tN = leer_tablero([
+            '--------', #7
+            '--------', #6
+            '--------', #5
+            '--------', #4
+            '--------', #3
+            '---E----', #2  ('d' cayó en trampa (2,2) y fue eliminado, E quedó en (2,3))
+            '--------', #1
+            '--------', #0
+            #01234567
+        ])
+        j0 = Juego(t0, DORADO, 0)
+        jN = Juego(tN, DORADO, 2)
+        m = Movimiento(EMPUJAR, Posicion(2, 4), [OESTE, OESTE])
+        self.assertEqual(realizar_movimiento(j0, m), jN)
 
 #### Ejercicio 7
 
