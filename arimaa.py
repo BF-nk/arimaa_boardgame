@@ -76,7 +76,7 @@ def movimiento_bien_formado(m : Movimiento) -> bool:
     pasos_validos : bool = False
     if m.accion== MOVER_A_SECAS:
         pasos_validos = len(m.pasos) == 1
-    elif m.accion== ARRASTRAR or m.accion== EMPUJAR:
+    else:
         pasos_validos = len(m.pasos) == 2
 
     res : bool = origen_valido and pasos_validos
