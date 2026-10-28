@@ -393,6 +393,10 @@ class test_hay_casilla_vacia_hacia(unittest.TestCase):
         t = tablero_8x8_mezclado()
         self.assertTrue(hay_casilla_vacia_hacia(t, Posicion(4, 3), ESTE))
 
+    def test_casilla_invalida(self):
+        t = tablero_8x8_inicial_ejemplo()
+        self.assertFalse(hay_casilla_vacia_hacia(t, Posicion(0,0), SUR))
+
         
 class test_hay_pieza_amiga_vecina(unittest.TestCase):
 
