@@ -620,55 +620,6 @@ def puede_realizar_movimiento(j : Juego, m : Movimiento) -> bool:
 
 #### Ejercicio 5
 
-def tablerosCoincidenEnLaPosicion(t1 : Tablero, t2 : Tablero, pos: Posicion) -> bool:
-    posicion_t1 : Casilla = t1[pos.fila][pos.columna]
-    posicion_t2 : Casilla = t2[pos.fila][pos.columna]
-
-    res : bool = posicion_t1 == posicion_t2
-    return res
-
-def tablerosCoincidenSalvoEnLaPosicion(t0: Tablero, t1 : Tablero, pos : Posicion) -> bool:
-    """Indica si dos tableros coinciden en todas sus posiciones salvo en la posición pos.
-    
-    PRE: 
-        tableroBienFormado(t0)
-        tableroBienFormado(t1)
-        posicionEnTablero(pos)
-    
-    Args:
-        t0 (Tablero): El primer tablero a comparar.
-        t1 (Tablero): El segundo tablero a comparar.
-        pos (Posicion): La posición del tablero a excluir de la comparación.
-        
-    Returns:
-        True si los tableros coinciden en todas las posiciones salvo en pos, y False en caso contrario.
-    """
-    res: bool = True
-    fila : int = 0 
-    while fila < len(t0) and res:
-        columna : int = 0
-        while columna < len(t0[fila]) and res:
-            pos_actual : Posicion = Posicion(fila, columna)
-            no_es_posicion_excluida : bool = pos_actual != pos
-            coinciden_en_posicion : bool = tablerosCoincidenEnLaPosicion(t0,t1, pos_actual)
-            
-
-            if no_es_posicion_excluida:
-                res = coinciden_en_posicion
-
-            columna += 1
-        fila +=1
-
-    return res
-
-def esTableroSacandoPieza(t0 : Tablero, t1 : Tablero, pos : Posicion) -> bool:
-    res : bool = tablerosCoincidenSalvoEnLaPosicion(t0, t1, pos) and hay_casilla_vacia(t1, pos)
-    return res
-
-def esTableroPoniendoPieza(t0 : Tablero, t1 : Tablero, pos : Posicion, f : Figura, col : Color) -> bool:
-    res : bool = tablerosCoincidenSalvoEnLaPosicion(t0, t1, pos) and hayFiguraDeColor(t1, pos, f, col)
-    return res
-
 def copiarTablero(t0 : Tablero) -> Tablero:
     res : Tablero = []
     for fila in t0:
@@ -679,41 +630,6 @@ def sacarPieza(t0 : Tablero, pos : Posicion) -> Tablero :
     res : Tablero = copiarTablero(t0)
     res[pos.fila][pos.columna] = VACIA
     return res
-
-def esTableroTrasladandoPieza(t0 : Tablero, t1: Tablero, pos_origen : Posicion, pos_destino : Posicion) -> bool:
-    """Indica si t1 resulta de trasladar la pieza de pos_origen a pos_destino en t0.
-    
-    PRE: hayPieza(t0, pos_origen) y posicionEnTablero(pos_destino)
-    
-    Args:
-        t0 (Tablero): Tablero inicial.
-        t1 (Tablero): Tablero resultante.
-        pos_origen (Posicion): Posición de la pieza a mover.
-        pos_destino (Posicion): Posición de destino de la pieza.
-        
-    Returns:
-        True si t1 es el tablero resultante de trasladar la pieza, False en caso contrario.
-    """
-    t_intermedio = sacarPieza(t0, pos_origen)
-    figura_pieza : Figura = casilla_en_posicion(t0, pos_origen).figura
-    color_pieza : Color = casilla_en_posicion(t0, pos_origen).color
-    esta_en_t0 : bool = hayFiguraDeColor(t0, pos_origen, figura_pieza, color_pieza)
-    no_esta_en_t_intermedio : bool = esTableroSacandoPieza(t0, t_intermedio, pos_origen)
-    esta_en_destino_t1 : bool = esTableroPoniendoPieza(t_intermedio, t1, pos_destino, figura_pieza, color_pieza)
-    res : bool = esta_en_t0 and no_esta_en_t_intermedio and esta_en_destino_t1
-    return res
-
-def esTableroDespuesDeActivarTrampa(t0 : Tablero, t1 : Tablero, pos_trampa : Posicion) -> bool:
-    """Verifica si t1 es el resultado de evaluar la trampa en pos_trampa sobre t0."""
-    res : bool = False
-    
-    if hay_casilla_vacia(t0, pos_trampa) or hayPiezaAmigaVecina(t0, pos_trampa):
-        res = (t1 == t0)
-    else:
-        res = esTableroSacandoPieza(t0, t1, pos_trampa)
-    return res
-
-    
 
 def activarTrampa(t: Tablero, pos: Posicion) -> Tablero:
     res : Tablero = copiarTablero(t)
@@ -741,11 +657,6 @@ def activar_trampas(t: Tablero) -> Tablero:
         Un tablero nuevo, bien formado, con todas las trampas activadas.
     """
     res : Tablero = activarTodasLasTrampas(t)
-    return res
-
-def esTableroDespuesDeActivarTodasLasTrampas(t0 : Tablero, t1 : Tablero):
-    tablero_esperado : Tablero = activar_trampas(t0)
-    res : bool = (t1 == tablero_esperado)
     return res
 
 #### Ejercicio 6
