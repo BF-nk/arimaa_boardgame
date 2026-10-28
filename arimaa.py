@@ -904,9 +904,182 @@ def realizar_movimiento(j: Juego, m: Movimiento) -> Juego:
 
 #### Ejercicio 7
 
+def esInicioDeTurno(j : Juego, col : Color) -> bool:
+    """
+    Indica si el juego se encuentra en el inicio del turno del jugador dado.
+
+    PRE: juego_bien_formado(j)
+    Args:
+        j (Juego): El estado actual del juego.
+        col (Color): El color del jugador a evaluar.
+    Returns:
+        True si el turno actual corresponde a col y se han consumido 0 pasos.
+    """
+    res : bool = j.turno == col and j.pasos_consumidos == 0
+    return res
+
+def hayConejoEnTablero(j : Juego, col : Color) -> bool:
+    """
+    Indica si existe al menos un conejo del color especificado en el tablero.
+
+    PRE: juego_bien_formado(j)
+    Args:
+        j (Juego): El estado actual del juego.
+        col (Color): El color del jugador del cual se buscan los conejos.
+    Returns:
+        True si hay al menos un conejo de color col en el tablero, False en caso contrario.
+    """
+    tablero = j.tablero
+    i : int = 0
+    res : bool = False
+
+    while i < len(tablero) and not res:
+        h : int = 0
+        while h < len(tablero[i]) and not res:
+            pos : Posicion = Posicion(i,h)
+            res = hayFiguraDeColor(j.tablero, pos, CONEJO, col)
+            h += 1
+        i += 1
+
+    return res
+
+def posicionEnFilaInicial(pos : Posicion, col : Color) -> bool:
+    """
+    Indica si la posición dada pertenece a la fila inicial correspondiente al color indicado.
+
+    PRE: posicion_en_tablero(pos)
+    Args:
+        pos (Posicion): La posición a evaluar en el tablero.
+        col (Color): El color del jugador (DORADO o PLATEADO).
+    Returns:
+        True si la posición corresponde a la fila 0 para DORADO o fila 7 para PLATEADO.
+    """
+    res : bool = False
+    if col == DORADO:
+        res = pos.fila == 0
+    else:
+        res = pos.fila == 7
+    return res
+
+def filaInicialColor(t: Tablero, col: Color) -> list[Posicion]:
+    """
+    Devuelve la lista con todas las posiciones correspondientes a la fila inicial de un color.
+
+    PRE: tablero_bien_formado(t)
+    Args:
+        t (Tablero): El tablero del juego.
+        col (Color): El color del jugador (DORADO o PLATEADO).
+    Returns:
+        list[Posicion]: Lista de posiciones correspondientes a la fila 0 si es DORADO o la fila 7 si es PLATEADO.
+    """
+    lista : list[Posicion] = []
+    i : int = 0
+    if col == DORADO:
+        while i < len(t[0]):
+            pos_actual : Posicion = Posicion(0,i)
+            lista.append(pos_actual)
+            i += 1
+    else:
+        while i < len(t[7]):
+            pos_actual : Posicion = Posicion(7,i)
+            lista.append(pos_actual)
+            i += 1
+
+    return lista
+
+def hayConejoEnFilaInicialOponente(j : Juego, col : Color) -> bool:
+    """
+    Indica si el jugador de color col tiene al menos un conejo en la fila inicial del oponente.
+
+    PRE: juego_bien_formado(j)
+    Args:
+        j (Juego): El estado actual del juego.
+        col (Color): El color del jugador a evaluar.
+    Returns:
+        True si hay al menos un conejo de color col en la fila inicial de su oponente, False en caso contrario.
+    """
+    color_oponente : Color = oponente(col)
+    tablero : Tablero = j.tablero
+    posiciones_iniciales : list[Posicion] = filaInicialColor(tablero, color_oponente)
+    res : bool = False
+    i : int = 0
+
+    while i < len(posiciones_iniciales) and not res:
+        pos_actual : Posicion = posiciones_iniciales[i]
+        res = hayFiguraDeColor(tablero, pos_actual, CONEJO, col)
+        i += 1
+    return res
+
+def reuneCondicionesDeGanar(j : Juego, col: Color) -> bool:
+    """
+    Indica si el jugador de color col cumple al menos una condición de victoria 
+    (tener un conejo en la fila inicial oponente o que el oponente se quede sin conejos).
+
+    PRE: juego_bien_formado(j)
+    Args:
+        j (Juego): El estado actual del juego.
+        col (Color): El color del jugador a evaluar.
+    Returns:
+        True si col reúne condiciones de ganar, False en caso contrario.
+    """
+    res : bool = hayConejoEnFilaInicialOponente(j, col) or not hayConejoEnTablero(j, oponente(col))
+    return res
+
+def reuneCondicionesDeGanarExclusivas(j : Juego, col : Color) -> bool:
+    """
+    Indica si el jugador de color col reúne condiciones de ganar y su oponente no.
+
+    PRE: juego_bien_formado(j)
+    Args:
+        j (Juego): El estado actual del juego.
+        col (Color): El color del jugador a evaluar.
+    Returns:
+        True si solo col reúne condiciones de ganar, False en caso contrario.
+    """
+    res : bool = reuneCondicionesDeGanar(j , col) and not reuneCondicionesDeGanar(j, oponente(col))
+    return res
+
+def esJugadorGanador(j : Juego, col : Color)-> bool:
+    """
+    Indica si el jugador de color col es el ganador del juego según las reglas
+    de inicio de turno y exclusividad de condiciones de ganar.
+
+    PRE: juego_bien_formado(j)
+    Args:
+        j (Juego): El estado actual del juego.
+        col (Color): El color del jugador a evaluar.
+    Returns:
+        True si col es el ganador definitivo del juego, False en caso contrario.
+    """
+    res : bool = (esInicioDeTurno(j, oponente(col)) and reuneCondicionesDeGanar(j,col)) or (esInicioDeTurno(j, col) and reuneCondicionesDeGanarExclusivas(j, col))
+    return res
+
+
 def hay_ganador_determinado(j : Juego) -> bool:
-    raise Exception("No implementado")
+    """
+    Indica si existe un ganador en el estado actual del juego.
+
+    PRE: juego_bien_formado(j)
+    Args:
+        j (Juego): El estado actual del juego.
+    Returns:
+        True si DORADO o PLATEADO es el ganador, False si el juego continúa o está trabado.
+    """
+    res : bool = esJugadorGanador(j, DORADO) or esJugadorGanador(j, PLATEADO)
+    return res
 
 def ganador_del_juego(j : Juego) -> Color:
-    raise Exception("No implementado")
+    """
+    Devuelve el color del jugador ganador del juego.
+
+    PRE: juego_bien_formado(j) y hay_ganador_determinado(j)
+    Args:
+        j (Juego): El estado actual del juego.
+    Returns:
+        DORADO si el ganador es las piezas doradas, PLATEADO en caso contrario.
+    """
+    res: Color = PLATEADO
+    if esJugadorGanador(j, DORADO):
+        res = DORADO
+    return res
 
