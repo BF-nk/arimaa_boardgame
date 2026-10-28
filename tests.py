@@ -1091,21 +1091,127 @@ class test_realizar_movimiento(unittest.TestCase):
 
 class test_ganador_del_juego(unittest.TestCase):
 
+
+    # VICTORIA POR LLEGADA DE CONEJO AL EXTREMO
+
     def test_promueve_conejo_dorado_turno_del_oponente(self):
-        t = leer_tablero([
-              'rr----Rr', #7
-              'c-----me', #6
-              '---Ed-R-', #5
-              '-M---R--', #4
-              '---R----', #3
-              '-rrrr---', #2
-              '-H---DCC', #1
-              'R-----RR', #0
-              #01234567
-            ])
+        # Conejo dorado 'R' está en la fila 7 (pos (7, 6)) y es el turno de PLATEADO (0 pasos consumidos)
+        t = leer_tablero(
+            [
+                "rr----Rr",  # 7 (R en fila inicial oponente)
+                "c-----me",  # 6
+                "---Ed-R-",  # 5
+                "-M---R--",  # 4
+                "---R----",  # 3
+                "-rrrr---",  # 2
+                "-H---DCC",  # 1
+                "R-----RR",  # 0
+                # 01234567
+            ]
+        )
         j = Juego(t, PLATEADO, 0)
         self.assertTrue(hay_ganador_determinado(j))
         self.assertEqual(ganador_del_juego(j), DORADO)
+
+    def test_promueve_conejo_plateado_turno_del_oponente(self):
+        # Conejo plateado 'r' está en la fila 0 (pos (0, 1)) y es el turno de DORADO (0 pasos consumidos)
+        t = leer_tablero(
+            [
+                "rrrr--rr",  # 7
+                "c-----me",  # 6
+                "---Ed---",  # 5
+                "-M---R--",  # 4
+                "---R----",  # 3
+                "-rrrr---",  # 2
+                "-H---DCC",  # 1
+                "Rr----RR",  # 0 (r en fila inicial oponente)
+                # 01234567
+            ]
+        )
+        j = Juego(t, DORADO, 0)
+        self.assertTrue(hay_ganador_determinado(j))
+        self.assertEqual(ganador_del_juego(j), PLATEADO)
+
+    def test_conejo_dorado_en_fila_7_turno_dorado_exclusivo(self):
+        # Es el inicio del turno de DORADO, tiene un conejo 'R' en fila 7 y PLATEADO NO reúne condiciones de ganar
+        t = leer_tablero(
+            [
+                "rr----Rr",  # 7 (R en col 6)
+                "--------",  # 6
+                "--------",  # 5
+                "--------",  # 4
+                "--------",  # 3
+                "--------",  # 2
+                "--------",  # 1
+                "R-----RR",  # 0
+                # 01234567
+            ]
+        )
+        j = Juego(t, DORADO, 0)
+        self.assertTrue(hay_ganador_determinado(j))
+        self.assertEqual(ganador_del_juego(j), DORADO)
+
+
+    # VICTORIA POR ELIMINACIÓN DE TODOS LOS CONEJOS ENEMIGOS
+
+    def test_plateado_sin_conejos_gana_dorado(self):
+        # DORADO conserva conejos 'R', pero PLATEADO se quedó sin conejos 'r' en todo el tablero
+        t = leer_tablero(
+            [
+                "------e-",  # 7
+                "--------",  # 6
+                "--------",  # 5
+                "--------",  # 4
+                "--------",  # 3
+                "--------",  # 2
+                "--------",  # 1
+                "RRRRRRRR",  # 0
+                # 01234567
+            ]
+        )
+        j = Juego(t, PLATEADO, 0)
+        self.assertTrue(hay_ganador_determinado(j))
+        self.assertEqual(ganador_del_juego(j), DORADO)
+
+    def test_dorado_sin_conejos_gana_plateado(self):
+        # PLATEADO conserva conejos 'r', pero DORADO se quedó sin conejos 'R'
+        t = leer_tablero(
+            [
+                "rrrrrrrr",  # 7
+                "--------",  # 6
+                "--------",  # 5
+                "--------",  # 4
+                "--------",  # 3
+                "--------",  # 2
+                "--------",  # 1
+                "------E-",  # 0
+                # 01234567
+            ]
+        )
+        j = Juego(t, DORADO, 0)
+        self.assertTrue(hay_ganador_determinado(j))
+        self.assertEqual(ganador_del_juego(j), PLATEADO)
+
+
+    # CASOS SIN GANADOR DETERMINADO 
+
+    def test_juego_en_progreso_sin_ganador(self):
+        # Estado normal del juego donde ambos conservan conejos y ninguno llegó a la fila objetivo
+        t = leer_tablero(
+            [
+                "rrrrrrrr",  # 7
+                "ccddhhme",  # 6
+                "--------",  # 5
+                "--------",  # 4
+                "--------",  # 3
+                "--------",  # 2
+                "EMHHDDCC",  # 1
+                "RRRRRRRR",  # 0
+                # 01234567
+            ]
+        )
+        j = Juego(t, DORADO, 0)
+        self.assertFalse(hay_ganador_determinado(j))
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
