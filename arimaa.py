@@ -120,7 +120,7 @@ def posicion_vecina_hacia(pos : Posicion, d : Direccion) -> Posicion:
         fila -= 1
     elif d == ESTE:
         columna += 1
-    elif d == OESTE:
+    else:
         columna -= 1
     res : Posicion = Posicion(fila, columna)
     
