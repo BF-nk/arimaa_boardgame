@@ -1,5 +1,3 @@
-from operator import pos
-
 from definiciones import *
 
 #### Algunas funciones ya dadas
